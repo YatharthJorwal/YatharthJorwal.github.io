@@ -183,9 +183,13 @@
     opacity:1;
     border-color:var(--teal);
   }
+  .panels:hover .panel{
+    opacity:0.35 !important;
+    border-color:var(--line) !important;
+  }
   .panels .panel:hover{
-    opacity:1;
-    border-color:var(--teal);
+    opacity:1 !important;
+    border-color:var(--teal) !important;
     cursor:pointer;
   }
   .ig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
