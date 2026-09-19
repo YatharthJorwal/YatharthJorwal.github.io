@@ -195,6 +195,53 @@
   .browser-body .line.accent{background:var(--teal);width:40%;height:14px;}
   .web-note{margin-top:14px;font-size:14px;color:var(--ink-soft);}
 
+  /* NAV LINKS */
+  .nav-right{display:flex;align-items:center;gap:22px;}
+  .nav-link{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+    text-decoration:none;
+    transition:color 0.2s ease;
+    white-space:nowrap;
+  }
+  .nav-link:hover{color:var(--ink);}
+
+  /* WORK */
+  section.work{padding:20px 0 88px;}
+  section.work h2{font-family:'Fraunces',serif;font-weight:500;font-size:30px;margin:10px 0 12px;}
+  .work-intro{color:var(--ink-soft);font-size:16px;max-width:540px;margin:0 0 36px;}
+  .work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  @media (max-width:820px){.work-grid{grid-template-columns:1fr;}}
+  .work-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+    display:flex;flex-direction:column;
+    text-decoration:none;
+    color:inherit;
+    transition:transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .work-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(20,33,31,0.08);border-color:var(--teal);}
+  .work-bar{padding:8px 12px;display:flex;gap:6px;background:var(--bg);border-bottom:1px solid var(--line);}
+  .work-bar span{width:8px;height:8px;border-radius:50%;background:var(--line);display:inline-block;}
+  .work-body{padding:24px 24px 26px;display:flex;flex-direction:column;flex-grow:1;}
+  .work-tag{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;color:var(--teal-dark);}
+  .work-card h3{font-family:'Fraunces',serif;font-weight:500;font-size:20px;margin:10px 0 8px;}
+  .work-card p{color:var(--ink-soft);font-size:14.5px;line-height:1.5;margin:0 0 20px;flex-grow:1;}
+  .work-link{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--teal-dark);
+    display:inline-flex;align-items:center;gap:6px;
+    width:fit-content;
+    border-bottom:1px solid var(--teal);
+    padding-bottom:2px;
+  }
+  .work-card:hover .work-link{color:var(--teal-dark);border-color:var(--teal-dark);}
+  .work-note{margin-top:30px;font-size:14px;color:var(--ink-soft);}
+
   /* PROCESS */
   section.process{padding:20px 0 88px;}
   .process h2{font-family:'Fraunces',serif;font-weight:500;font-size:30px;margin:10px 0 40px;}
@@ -285,7 +332,10 @@
       </svg>
       Yatharth Webs
     </div>
-    <a class="nav-cta" href="https://wa.me/918130926649" target="_blank" rel="noopener">Chat on WhatsApp →</a>
+    <div class="nav-right">
+      <a class="nav-link" href="#work">Work</a>
+      <a class="nav-cta" href="https://wa.me/918130926649" target="_blank" rel="noopener">Chat on WhatsApp →</a>
+    </div>
   </div>
 </nav>
 
@@ -341,6 +391,44 @@
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="work" id="work">
+  <div class="wrap">
+    <span class="eyebrow">Recent work</span>
+    <h2>A few shops already live.</h2>
+    <p class="work-intro">These are full working sites, not just image mockups — click through and browse them the way a customer would.</p>
+    <div class="work-grid">
+      <a class="work-card" href="https://yatharthjorwal.github.io/Mockup-manziltours/" target="_blank" rel="noopener">
+        <div class="work-bar"><span></span><span></span><span></span></div>
+        <div class="work-body">
+          <span class="work-tag">Travel &amp; chauffeur</span>
+          <h3>Manzil Tours &amp; Travels</h3>
+          <p>Chauffeur-driven SUV bookings for Delhi NCR — fleet, routes and pricing laid out for a quick WhatsApp booking.</p>
+          <span class="work-link">View live site →</span>
+        </div>
+      </a>
+      <a class="work-card" href="https://yatharthjorwal.github.io/Mockup-bhatti.co/" target="_blank" rel="noopener">
+        <div class="work-bar"><span></span><span></span><span></span></div>
+        <div class="work-body">
+          <span class="work-tag">Restaurant</span>
+          <h3>Bhatti Pizza Co.</h3>
+          <p>Wood-fired pizza menu and ordering for a Hauz Khas spot, built to get people from "hungry" to "ordered" fast.</p>
+          <span class="work-link">View live site →</span>
+        </div>
+      </a>
+      <a class="work-card" href="https://yatharthjorwal.github.io/Mockup-kaagazstudio/" target="_blank" rel="noopener">
+        <div class="work-bar"><span></span><span></span><span></span></div>
+        <div class="work-body">
+          <span class="work-tag">Retail</span>
+          <h3>Kaagaz Studio</h3>
+          <p>Handmade stationery shop with a full product catalogue, store hours and location for walk-ins and WhatsApp orders.</p>
+          <span class="work-link">View live site →</span>
+        </div>
+      </a>
+    </div>
+    <p class="work-note">These are sample builds made to show what's possible — not paid client work yet. Yours could be next.</p>
   </div>
 </section>
 
