@@ -53,6 +53,15 @@ const chips = document.getElementById('chips');
 const HOME = 'https://yatharthwebs.site';
 const GH = 'https://github.com/YatharthJorwal';
 const link = (u, t) => `<a href="${u}" target="_blank" rel="noopener">${t || u}</a>`;
+/* Email: Gmail compose on desktop, the phone's mail app on mobile (a mailto: link with target=_blank does nothing in most browsers) */
+const MAIL = 'websyatharth@gmail.com';
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const mailLink = (t, subject = 'Website enquiry', body = "Hi Yatharth,\n\nI'd like a website for my shop. Could you share a free mockup and the next steps?\n\nThanks,") => {
+  const e = encodeURIComponent;
+  return isMobile
+    ? `<a href="mailto:${MAIL}?subject=${e(subject)}&body=${e(body)}">${t}</a>`
+    : `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${e(MAIL)}&su=${e(subject)}&body=${e(body)}" target="_blank" rel="noopener">${t}</a>`;
+};
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -156,7 +165,7 @@ First chat to live site in five days, pricing from ₹1,500.`);
   contact() {
     print(`<span class="y">contact</span>
   WhatsApp   ${link('https://wa.me/918130926649', 'wa.me/918130926649')} <span class="dim">(fastest)</span>
-  Email      ${link('mailto:websyatharth@gmail.com', 'websyatharth@gmail.com')}
+  Email      ${mailLink('websyatharth@gmail.com')}
   Instagram  ${link('https://instagram.com/yatharthwebs', '@yatharthwebs')}
   X          ${link('https://x.com/YatharthJorwal', '@YatharthJorwal')}
   GitHub     ${link(GH, 'YatharthJorwal')}
@@ -380,7 +389,7 @@ First chat to live site in five days, pricing from ₹1,500.`);
     await wait(reduce ? 0 : 700);
     print('<span class="t">Access granted.</span> Hiring process started...');
     await wait(reduce ? 0 : 500);
-    print(`Message him: ${link('https://wa.me/918130926649?text=Hi%20Yatharth%2C%20I%27d%20like%20a%20website%20for%20my%20shop.', 'WhatsApp')} or ${link('mailto:websyatharth@gmail.com?subject=Website%20enquiry', 'email')}`);
+    print(`Message him: ${link('https://wa.me/918130926649?text=Hi%20Yatharth%2C%20I%27d%20like%20a%20website%20for%20my%20shop.', 'WhatsApp')} or ${mailLink('email')}`);
   }
 };
 

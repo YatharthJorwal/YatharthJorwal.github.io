@@ -14,6 +14,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link rel="stylesheet" href="assets/styles.css">
 <meta name="google-site-verification" content="PASTE_GSC_TOKEN_HERE">  <!-- Search Console: replace token, or delete this line if you verify via DNS -->
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ProfessionalService", "@id": "https://yatharthwebs.site/#business", "name": "Yatharth Webs", "alternateName": ["YatharthWebs", "Yatharth Webs Delhi"], "url": "https://yatharthwebs.site/", "description": "Freelance web design and development for local shops in Delhi NCR. Simple, fast websites live in five days, priced from ₹1,500.", "founder": {"@type": "Person", "name": "Yatharth Jorwal", "url": "https://yatharthwebs.site/about.html"}, "areaServed": {"@type": "AdministrativeArea", "name": "Delhi NCR, India"}, "priceRange": "₹1,500–₹6,500", "sameAs": ["https://instagram.com/yatharthwebs", "https://x.com/YatharthJorwal", "https://github.com/YatharthJorwal"]}</script>
@@ -401,7 +403,8 @@ function renderList(f){
   $('#plist').innerHTML = cats.map(cat => {
     const rows = PROJECTS.filter(p => p.cat === cat);
     if (!rows.length) return '';
-    return `<div class="pcol">
+    const wide = cats.length === 1 || cat === 'own';
+    return `<div class="pcol${wide ? ' wide' : ''}">
       <h4 class="pcol-h">${CAT_LABELS[cat]} <span class="pcol-n">${rows.length}</span></h4>
       <div class="pcol-list">${rows.map(pitemHtml).join('')}</div>
     </div>`;
@@ -519,6 +522,12 @@ $('#enqForm').addEventListener('submit', e => {
   if (typeof fbq === 'function') fbq('track', 'Lead');
   finish(e.target, $('#enqDone'), $('#enqFallback'), link, isMail);
 });
+(() => {
+  const q = new URLSearchParams(location.search).get('plan');
+  if (!q) return;
+  const opt = [...$('#ePlan').options].find(o => o.value.toLowerCase().startsWith(q.toLowerCase()));
+  if (opt) $('#ePlan').value = opt.value;
+})();
 $$('[data-plan]').forEach(b => b.addEventListener('click', () => {
   $('#ePlan').value = b.dataset.plan;
   $('#enquire').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'});
@@ -528,7 +537,12 @@ $$('[data-plan]').forEach(b => b.addEventListener('click', () => {
 /* reviews: stage */
 const stage = $('#revStage'); let ri = 0, timer;
 const starRow = n => `<span class="stars" role="img" aria-label="${n} out of 5 stars">${[1,2,3,4,5].map(i => `<span class="${i<=n?'':'off'}" style="display:inline-flex">${starSvg}</span>`).join('')}</span>`;
+let revLoading = true;
 function renderReview(){
+  if (!REVIEWS.length && revLoading){
+    stage.innerHTML = `<div class="rev-skel" aria-busy="true" aria-label="Loading reviews"><i style="width:38%"></i><b></b><b></b><b style="width:72%"></b><i style="width:30%"></i></div>`;
+    return;
+  }
   if (!REVIEWS.length){
     stage.innerHTML = `<div class="rev-empty"><span class="stars" aria-hidden="true">${[1,2,3,4,5].map(()=>`<span class="off" style="display:inline-flex">${starSvg}</span>`).join('')}</span>
       <h3 style="margin-top:14px">No reviews yet — be the first.</h3>
@@ -579,19 +593,30 @@ $('#revForm').addEventListener('submit', e => {
   finish(e.target, $('#revDone'), $('#revFallback'), link, isMail);
 });
 
-/* approved reviews come from the Reviews sheet (Status = Approved) */
+/* approved reviews come from the Reviews sheet (Status = Approved).
+   Cached in the browser so repeat visits show them instantly; the sheet is re-checked in the background. */
+const REV_KEY = 'yw_reviews_v1';
+const cleanRev = x => ({name:String(x.name || 'Anonymous'), shop:String(x.shop || ''),
+  rating:Math.min(5, Math.max(1, Number(x.rating) || 5)), text:String(x.text || '')});
+function setReviews(list){
+  REVIEWS.length = 0; list.forEach(x => REVIEWS.push(cleanRev(x)));
+  if (ri >= REVIEWS.length) ri = 0;
+  revLoading = false; renderReview(); startRotate();
+}
 async function loadReviews(){
-  if (!SHEET_URL) return;
+  try { const c = JSON.parse(localStorage.getItem(REV_KEY) || 'null'); if (Array.isArray(c) && c.length) setReviews(c); } catch(_){}
+  if (!SHEET_URL){ revLoading = false; renderReview(); return; }
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 15000);
   try {
-    const r = await fetch(SHEET_URL + '?action=reviews');
+    const r = await fetch(SHEET_URL + '?action=reviews', {signal: ctl.signal});
     const j = await r.json();
-    if (!Array.isArray(j.reviews) || !j.reviews.length) return;
-    j.reviews.forEach(x => REVIEWS.push({
-      name:String(x.name || 'Anonymous'), shop:String(x.shop || ''),
-      rating:Math.min(5, Math.max(1, Number(x.rating) || 5)), text:String(x.text || '')
-    }));
-    ri = 0; renderReview(); startRotate();
+    if (Array.isArray(j.reviews)){
+      try { localStorage.setItem(REV_KEY, JSON.stringify(j.reviews)); } catch(_){}
+      setReviews(j.reviews);
+    }
   } catch(_){}
+  clearTimeout(t);
+  if (revLoading){ revLoading = false; renderReview(); }
 }
 loadReviews();
 </script>
