@@ -15,6 +15,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<meta name="google-site-verification" content="PASTE_GSC_TOKEN_HERE">  <!-- Search Console: replace token, or delete this line if you verify via DNS -->
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ProfessionalService", "@id": "https://yatharthwebs.site/#business", "name": "Yatharth Webs", "alternateName": ["YatharthWebs", "Yatharth Webs Delhi"], "url": "https://yatharthwebs.site/", "description": "Freelance web design and development for local shops in Delhi NCR. Simple, fast websites live in five days, priced from ₹1,500.", "founder": {"@type": "Person", "name": "Yatharth Jorwal", "url": "https://yatharthwebs.site/about.html"}, "areaServed": {"@type": "AdministrativeArea", "name": "Delhi NCR, India"}, "priceRange": "₹1,500–₹6,500", "sameAs": ["https://instagram.com/yatharthwebs", "https://x.com/YatharthJorwal", "https://github.com/YatharthJorwal"]}</script>
+<script src="assets/pixel.js"></script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1102043718863613&ev=PageView&noscript=1" alt=""></noscript>
 </head>
 <body>
 <div class="progress" aria-hidden="true"><i id="bar"></i></div>
@@ -512,6 +516,7 @@ $('#enqForm').addEventListener('submit', e => {
   let link;
   if (isMail) link = openMail('Website enquiry' + (v.shop ? ` — ${v.shop}` : ''), text);
   else { link = waUrl(text); window.open(link, '_blank', 'noopener'); }
+  if (typeof fbq === 'function') fbq('track', 'Lead');
   finish(e.target, $('#enqDone'), $('#enqFallback'), link, isMail);
 });
 $$('[data-plan]').forEach(b => b.addEventListener('click', () => {
