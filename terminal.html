@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Yatharth Webs — Terminal</title>
 <meta name="description" content="Me, as a terminal. Type help, spin the commit roulette, play snake, or try sudo hire yatharth.">
 <meta name="theme-color" content="#0a1626">
@@ -40,6 +40,20 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--yel);outline-offset
 @keyframes pop{50%{transform:scale(1.04)}}
 @media (prefers-reduced-motion:reduce){.reel.done{animation:none}}
 @media (max-width:520px){body{padding:6px;font-size:14px}}
+
+html{-webkit-text-size-adjust:100%;overflow:hidden}
+body{height:100%;overflow:hidden;overscroll-behavior:none;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+@supports (height:100dvh){body{height:100dvh}}
+#in{font-size:16px}
+.pre{white-space:pre;overflow-x:auto;overflow-y:hidden}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media (max-width:520px){
+ .pf{display:none}
+ #chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+ #chips::-webkit-scrollbar{display:none}
+ #chips button{flex:none}
+ #term{padding:10px 12px}
+}
 </style>
 </head>
 <body>
@@ -108,27 +122,152 @@ async function roulette() {
   print('Type <span class="t">roulette</span> to spin again.', 'dim');
 }
 
+function printText(t, cls = '') { const p = print('', cls); p.textContent = t; return p; }
+const DIRS = { ArrowUp: [0, -1], w: [0, -1], ArrowDown: [0, 1], s: [0, 1], ArrowLeft: [-1, 0], a: [-1, 0], ArrowRight: [1, 0], d: [1, 0] };
+let mode = null;
+
+/* full-screen canvas game shell: restart + exit buttons, keys, swipe, tap */
+function arcade(name, hint, cols, rows, game) {
+  input.blur();
+  return new Promise(done => {
+    const cs = getComputedStyle(document.documentElement);
+    const C = { bg: cs.getPropertyValue('--bg').trim(), fg: cs.getPropertyValue('--teal').trim(), gold: cs.getPropertyValue('--yel').trim(), dim: cs.getPropertyValue('--dim').trim() };
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `position:fixed;inset:0;height:100dvh;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:${C.bg};touch-action:none;user-select:none;-webkit-user-select:none`;
+    const u = Math.max(8, Math.floor(Math.min((innerWidth - 24) / cols, (innerHeight - 200) / rows, 22)));
+    const W = cols * u, H = rows * u, dpr = Math.min(devicePixelRatio || 1, 2);
+    const info = document.createElement('div'); info.style.color = C.gold;
+    const c = document.createElement('canvas');
+    c.width = W * dpr; c.height = H * dpr;
+    c.style.cssText = `width:${W}px;height:${H}px;border:1px solid ${C.fg}`;
+    const x = c.getContext('2d'); x.scale(dpr, dpr);
+    const hintEl = document.createElement('div');
+    hintEl.style.cssText = `color:${C.dim};font-size:13px;text-align:center;padding:0 12px`;
+    hintEl.textContent = hint;
+    const bar = document.createElement('div'); bar.style.cssText = 'display:flex;gap:10px';
+    const btn = (t, f) => { const b = document.createElement('button'); b.textContent = t; b.style.cssText = `font:inherit;font-size:15px;padding:10px 20px;border-radius:8px;border:1px solid ${C.fg};background:none;color:${C.fg};cursor:pointer`; b.onclick = f; bar.appendChild(b); };
+    btn('restart', () => start()); btn('exit', () => quit());
+    wrap.append(info, c, hintEl, bar); document.body.appendChild(wrap);
+
+    let timer = 0, over = false;
+    const g = { x, u, W, H, C, key: null, tap: null, swipe: null, result: '',
+      info: t => { info.textContent = t; },
+      loop: (ms, fn) => { clearInterval(timer); timer = setInterval(fn, ms); },
+      end: msg => {
+        over = true; clearInterval(timer);
+        x.fillStyle = 'rgba(0,0,0,.65)'; x.fillRect(0, 0, W, H);
+        x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = '600 20px monospace'; x.fillText('game over', W / 2, H / 2 - 10);
+        x.font = '13px monospace'; x.fillText(msg, W / 2, H / 2 + 12); x.fillText('tap or press Enter to restart', W / 2, H / 2 + 32);
+      } };
+    function start() { clearInterval(timer); over = false; g.key = g.tap = g.swipe = null; x.textAlign = 'left'; game(g); }
+    function quit() {
+      clearInterval(timer); document.removeEventListener('keydown', onKey, true); wrap.remove();
+      print(`${name}: ${g.result || 'bye'}. Type <span class="t">${name}</span> to play again.`); done();
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); return quit(); }
+      if (over && (e.key === 'Enter' || e.key === ' ' || e.key === 'r')) { e.preventDefault(); return start(); }
+      if (e.key === ' ' || e.key.startsWith('Arrow')) e.preventDefault();
+      if (!over && g.key) g.key(e);
+    }
+    document.addEventListener('keydown', onKey, true);
+    let t0;
+    wrap.addEventListener('touchstart', e => { t0 = e.touches[0]; }, { passive: true });
+    wrap.addEventListener('touchend', e => {
+      if (e.target.closest('button') || !t0) return;
+      e.preventDefault();
+      const t = e.changedTouches[0], dx = t.clientX - t0.clientX, dy = t.clientY - t0.clientY;
+      if (over) return start();
+      if (Math.hypot(dx, dy) < 20) g.tap && g.tap(); else g.swipe && g.swipe(dx, dy);
+    });
+    c.onclick = () => { if (over) start(); else g.tap && g.tap(); };
+    start();
+  });
+}
+
+function snakeGame(g) {
+  const N = 20, { x, u, C } = g;
+  let best = 0; try { best = +localStorage.getItem('snake') || 0; } catch (e) {}
+  let body = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }], dir = { x: 1, y: 0 }, next = dir, score = 0;
+  const spawn = () => { let p; do { p = { x: Math.floor(Math.random() * N), y: Math.floor(Math.random() * N) }; } while (body.some(b => b.x === p.x && b.y === p.y)); return p; };
+  let food = spawn();
+  const draw = () => {
+    x.fillStyle = C.bg; x.fillRect(0, 0, g.W, g.H);
+    x.fillStyle = C.gold; x.fillRect(food.x * u + 2, food.y * u + 2, u - 4, u - 4);
+    body.forEach((b, i) => { x.fillStyle = i ? C.fg : '#fff'; x.fillRect(b.x * u + 1, b.y * u + 1, u - 2, u - 2); });
+    g.info(`score ${score}   best ${best}`);
+  };
+  const turn = (a, b) => { if (a !== -dir.x || b !== -dir.y) next = { x: a, y: b }; };
+  g.key = e => { const k = DIRS[e.key] || DIRS[e.key.toLowerCase()]; if (k) turn(k[0], k[1]); };
+  g.swipe = (dx, dy) => { if (Math.abs(dx) > Math.abs(dy)) turn(dx > 0 ? 1 : -1, 0); else turn(0, dy > 0 ? 1 : -1); };
+  g.loop(110, () => {
+    dir = next;
+    const h = { x: body[0].x + dir.x, y: body[0].y + dir.y };
+    if (h.x < 0 || h.y < 0 || h.x >= N || h.y >= N || body.some(b => b.x === h.x && b.y === h.y)) {
+      if (score > best) { best = score; try { localStorage.setItem('snake', best); } catch (e) {} }
+      g.result = `scored ${score}`; draw(); return g.end(`score ${score}   best ${best}`);
+    }
+    body.unshift(h);
+    if (h.x === food.x && h.y === food.y) { score++; food = spawn(); } else body.pop();
+    draw();
+  });
+  draw();
+}
+
+function dinoGame(g) {
+  const { x, u, C, W, H } = g, gy = H - 2 * u;
+  let best = 0; try { best = +localStorage.getItem('run') || 0; } catch (e) {}
+  let y = 0, vy = 0, score = 0, obs = [{ x: W + u * 4, w: u, h: u * 1.6 }];
+  const jump = () => { if (y === 0) vy = u * .95; };
+  g.key = e => { if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w') jump(); };
+  g.tap = g.swipe = jump;
+  g.loop(30, () => {
+    vy -= u * .08; y += vy; if (y <= 0) { y = 0; vy = 0; }
+    const spd = u * (.3 + score / 1500);
+    obs.forEach(o => { o.x -= spd; });
+    if (obs[0].x < -2 * u) obs.shift();
+    if (obs[obs.length - 1].x < W - u * (9 + Math.random() * 8)) obs.push({ x: W + u, w: u * (.8 + Math.random() * .6), h: u * (1.2 + Math.random() * 1.2) });
+    score++;
+    x.fillStyle = C.bg; x.fillRect(0, 0, W, H);
+    x.fillStyle = C.dim; x.fillRect(0, gy, W, 2);
+    x.fillStyle = C.gold; obs.forEach(o => x.fillRect(o.x, gy - o.h, o.w, o.h));
+    x.fillStyle = C.fg; x.fillRect(3 * u, gy - y - 1.2 * u, u, 1.2 * u);
+    x.fillStyle = '#fff'; x.fillRect(3.6 * u, gy - y - 1.0 * u, u * .22, u * .22);
+    g.info(`score ${Math.floor(score / 5)}   best ${best}`);
+    if (obs.some(o => o.x < 4 * u && o.x + o.w > 3 * u && y < o.h - u * .2)) {
+      const sc = Math.floor(score / 5);
+      if (sc > best) { best = sc; try { localStorage.setItem('run', best); } catch (e) {} }
+      g.result = `scored ${sc}`; g.end(`score ${sc}   best ${best}`);
+    }
+  });
+}
+
+const KON = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+let ki = 0;
+document.addEventListener('keydown', e => {
+  const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+  ki = k === KON[ki] ? ki + 1 : (k === KON[0] ? 1 : 0);
+  if (ki === KON.length) { ki = 0; print('<span class="y">+30 lives.</span> Cheat code accepted.'); }
+});
+
 const CMDS = {
   help() {
     print(
 `<span class="y">the real stuff</span>
-  about  projects  pricing  skills  contact
+  about  projects  pricing  skills
+  contact  exit
 
-<span class="y">the fun stuff</span>
-  roulette     spin for today's commit idea
-  neofetch     specs, Yatharth edition
-  theme        recolor: theme amber | mint | rose | navy
-  matrix       digital rain (click to exit)
-  snake        play snake, beat your best
-  hack         breach the mainframe
-  ping         ping yatharthwebs.site
-  git log      my commit history
-  fortune      a dev fortune
-  cowsay hi    a cow says hi
-  open site    open a link: site, nutrition, whatsapp, github
-  exit         back to the main site
-  coffee  date  echo  history  clear
-<span class="dim">Tab completes. Up/Down browse history. There are secrets: try sudo hire yatharth</span>`);
+<span class="y">games</span> <span class="dim">(type games)</span>
+  snake  run  guess  typing  roulette
+
+<span class="y">toys</span>
+  neofetch  theme  matrix  hack  ping
+  fortune  joke  8ball  flip  roll
+  cowsay  git log  open site  history
+  coffee  date  echo  clear
+
+<span class="dim">Tab completes. Up/Down = history.
+There are secrets. Try sudo hire yatharth</span>`);
   },
   about() {
     print(`Yatharth Jorwal, web developer from Delhi.
@@ -137,23 +276,29 @@ First chat to live site in five days, pricing from ₹1,500.`);
   },
   projects() {
     print(`<span class="y">live client sites</span>
-  iDeserve Nutrition  ${link('https://www.ideservenutrition.com/')}
-  Ginni Plus          ${link('https://www.ginniplus.com/')}
-  Trishla Gold        ${link('https://trishlagolddiamonds.netlify.app/')}
+  iDeserve Nutrition
+    ${link('https://www.ideservenutrition.com/', 'ideservenutrition.com')}
+  Ginni Plus
+    ${link('https://www.ginniplus.com/', 'ginniplus.com')}
+  Trishla Gold
+    ${link('https://trishlagolddiamonds.netlify.app/', 'trishlagolddiamonds.netlify.app')}
 <span class="y">my own build</span>
-  EchoBridge          ${link('https://echo-bridge.in/')}
-  This terminal       you are here :)
+  EchoBridge
+    ${link('https://echo-bridge.in/', 'echo-bridge.in')}
+  This terminal <span class="dim">(you are here)</span>
 <span class="y">sample mockups</span> <span class="dim">(not client work)</span>
   Manzil, Bhatti, Kaagaz
-<span class="dim">Full directory: </span>${link(HOME + '/projects.html')}
-<span class="dim">Code: </span>${link(GH)}`);
+<span class="dim">All:</span> ${link(HOME + '/projects.html', 'projects page')}  <span class="dim">Code:</span> ${link(GH, 'github')}`);
   },
   pricing() {
     print(`<span class="y">pricing</span> <span class="dim">(founding-client rates)</span>
-  Starter   ₹1,500–2,000   one page, live in 3–5 days
-  Standard  ₹3,500–4,500   multi-page with contact form
-  Growth    ₹5,500–6,500   Standard + basic SEO, WhatsApp and Instagram
-<span class="dim">Free mockup idea on request: </span>${link('https://wa.me/918130926649', 'WhatsApp me')}`);
+  Starter   ₹1,500–2,000
+    one page, live in 3–5 days
+  Standard  ₹3,500–4,500
+    multi-page + contact form
+  Growth    ₹5,500–6,500
+    Standard + SEO, WhatsApp, Instagram
+${link('https://wa.me/918130926649', 'WhatsApp me for a free mockup idea')}`);
   },
   skills() {
     print(`<span class="y">skills</span>
@@ -174,15 +319,13 @@ First chat to live site in five days, pricing from ₹1,500.`);
   roulette,
   clear() { [...term.querySelectorAll('.line,.reels')].forEach(n => n.remove()); },
   neofetch() {
-    print(String.raw`<span class="t">  __   __</span>     <span class="y">visitor</span>@<span class="y">yatharth-webs</span>
-<span class="t">  \ \ / /</span>     -----------------
-<span class="t">   \ V /</span>      <span class="y">Role</span>       web developer, Delhi
-<span class="t">    | |</span>       <span class="y">Brand</span>      Yatharth Webs
-<span class="t">    |_|</span>       <span class="y">Builds</span>     sites for local shops
-                <span class="y">Turnaround</span> 5 days
-                <span class="y">From</span>       ₹1,500
-                <span class="y">Shell</span>      portfolio.sh
-                <span class="y">Fuel</span>       chai, mostly`);
+    const L = ['  __   __', '  \\ \\ / /', '   \\ V /', '    | |', '    |_|'];
+    const rows = [['Role', 'web developer, Delhi'], ['Brand', 'Yatharth Webs'], ['Builds', 'sites for local shops'], ['Turnaround', '5 days'], ['From', '₹1,500'], ['Shell', 'portfolio.sh'], ['Fuel', 'chai, mostly']];
+    const I = ['<span class="y">visitor</span>@<span class="y">yatharth-webs</span>', '-----------------', ...rows.map(([k, v]) => `<span class="y">${k.padEnd(11)}</span>${v}`)];
+    const out = matchMedia('(max-width:520px)').matches
+      ? [...L.map(l => `<span class="t">${l}</span>`), '', ...I]
+      : I.map((l, i) => (L[i] ? `<span class="t">${L[i].padEnd(12)}</span>` : ' '.repeat(12)) + l);
+    print(out.join('\n'), 'pre');
   },
   theme(arg) {
     const T = {
@@ -199,30 +342,37 @@ First chat to live site in five days, pricing from ₹1,500.`);
     print(`theme set to <span class="t">${n}</span>`);
   },
   matrix() {
-    if (reduce) { print('matrix skipped: your device asks for reduced motion.', 'dim'); return; }
+    if (reduce) { print('matrix skipped: reduced motion is on.', 'dim'); return; }
+    input.blur();
+    print('matrix running. Tap or press any key to exit.', 'dim');
     return new Promise(done => {
       const c = document.createElement('canvas');
-      c.style.cssText = 'position:fixed;inset:0;z-index:9;cursor:pointer';
-      c.width = innerWidth; c.height = innerHeight;
+      c.style.cssText = 'position:fixed;inset:0;width:100%;height:100dvh;z-index:9;background:var(--bg);touch-action:none';
       document.body.appendChild(c);
-      const x = c.getContext('2d');
-      const css = getComputedStyle(document.documentElement);
-      const bg = css.getPropertyValue('--bg'), fg = css.getPropertyValue('--teal');
-      const drops = Array.from({ length: Math.floor(c.width / 16) }, () => Math.random() * -40);
-      let on = true;
-      const stop = () => { if (!on) return; on = false; c.remove(); print('Wake up, visitor. Type <span class="t">help</span>.', 'dim'); done(); };
-      c.onclick = stop;
-      setTimeout(stop, 6000);
-      (function frame() {
-        if (!on) return;
-        x.globalAlpha = .15; x.fillStyle = bg; x.fillRect(0, 0, c.width, c.height);
-        x.globalAlpha = 1; x.fillStyle = fg; x.font = '16px monospace';
+      const w = c.clientWidth, h = c.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2), fs = w < 520 ? 14 : 16;
+      c.width = w * dpr; c.height = h * dpr;
+      const x = c.getContext('2d'); x.scale(dpr, dpr);
+      const css = getComputedStyle(document.documentElement), bg = css.getPropertyValue('--bg').trim(), fg = css.getPropertyValue('--teal').trim();
+      const CH = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789';
+      const cols = Math.floor(w / fs), off = (w - cols * fs) / 2 + fs / 2;
+      const drops = Array.from({ length: cols }, () => -Math.random() * h / fs);
+      let on = true, id;
+      const stop = () => {
+        if (!on) return; on = false; clearInterval(id);
+        removeEventListener('keydown', stop); removeEventListener('resize', stop); c.remove();
+        print('Wake up, visitor. Type <span class="t">help</span>.', 'dim'); done();
+      };
+      c.addEventListener('pointerdown', stop); addEventListener('keydown', stop); addEventListener('resize', stop);
+      setTimeout(stop, 8000);
+      x.font = `${fs}px monospace`; x.textAlign = 'center';
+      id = setInterval(() => {
+        x.globalAlpha = .1; x.fillStyle = bg; x.fillRect(0, 0, w, h); x.globalAlpha = 1;
         drops.forEach((d, i) => {
-          x.fillText(String.fromCharCode(0x30A0 + Math.random() * 96), i * 16, d * 16);
-          drops[i] = d * 16 > c.height && Math.random() > .975 ? 0 : d + 1;
+          x.fillStyle = Math.random() < .08 ? '#d6fff9' : fg;
+          x.fillText(CH[Math.floor(Math.random() * CH.length)], off + i * fs, d * fs);
+          drops[i] = d * fs > h && Math.random() > .975 ? 0 : d + 1;
         });
-        setTimeout(() => requestAnimationFrame(frame), 40);
-      })();
+      }, 55);
     });
   },
   async hack() {
@@ -230,7 +380,7 @@ First chat to live site in five days, pricing from ₹1,500.`);
     for (const st of steps) {
       const p = print('');
       for (let i = 0; i <= 10; i++) {
-        p.textContent = `${st.padEnd(24, '.')} [${'#'.repeat(i)}${' '.repeat(10 - i)}] ${i * 10}%`;
+        p.textContent = `${st.padEnd(20, '.')} [${'#'.repeat(i)}${' '.repeat(10 - i)}] ${i * 10}%`;
         if (!reduce) await wait(60);
       }
     }
@@ -272,9 +422,12 @@ First chat to live site in five days, pricing from ₹1,500.`);
   },
   cowsay(arg) {
     const t = (arg || '').trim() || 'moo. hire yatharth.';
-    const bar = '-'.repeat(t.length + 2);
-    const p = print('');
-    p.textContent = ` ${'_'.repeat(t.length + 2)}\n< ${t} >\n ${bar}\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||`;
+    const lines = []; let cur = '';
+    t.split(/\s+/).forEach(w => { if ((cur + ' ' + w).trim().length > 22) { lines.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); });
+    lines.push(cur);
+    const n = Math.max(...lines.map(l => l.length)), m = lines.length;
+    const body = m === 1 ? [`< ${lines[0].padEnd(n)} >`] : lines.map((l, i) => `${i === 0 ? '/' : i === m - 1 ? '\\' : '|'} ${l.padEnd(n)} ${i === 0 ? '\\' : i === m - 1 ? '/' : '|'}`);
+    printText([' ' + '_'.repeat(n + 2), ...body, ' ' + '-'.repeat(n + 2), '        \\   ^__^', '         \\  (oo)\\_______', '            (__)\\       )\\/\\', '                ||----w |', '                ||     ||'].join('\n'), 'pre');
   },
   open(arg) {
     const L = {
@@ -286,90 +439,68 @@ First chat to live site in five days, pricing from ₹1,500.`);
     print(`opening ${link(L[k], k)}`);
     window.open(L[k], '_blank', 'noopener');
   },
-  snake() {
-    return new Promise(done => {
-      const N = 20;
-      const size = Math.max(200, Math.floor(Math.min(innerWidth - 24, innerHeight - 160, 400) / N) * N);
-      const cs = size / N;
-      const css = getComputedStyle(document.documentElement);
-      const bg = css.getPropertyValue('--bg').trim(), fg = css.getPropertyValue('--teal').trim(), gold = css.getPropertyValue('--yel').trim(), dim = css.getPropertyValue('--dim').trim();
-      const wrap = document.createElement('div');
-      wrap.style.cssText = `position:fixed;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:${bg};touch-action:none`;
-      const info = document.createElement('div');
-      info.style.color = gold;
-      const c = document.createElement('canvas');
-      c.width = c.height = size;
-      c.style.border = `1px solid ${fg}`;
-      const hint = document.createElement('div');
-      hint.style.cssText = `color:${dim};font-size:13px`;
-      hint.textContent = 'Arrows, WASD or swipe. Esc to quit.';
-      wrap.append(info, c, hint);
-      document.body.appendChild(wrap);
-      const x = c.getContext('2d');
-
-      let best = 0;
-      try { best = +localStorage.getItem('snake') || 0; } catch (e) {}
-      let body = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
-      let dir = { x: 1, y: 0 }, next = dir, score = 0, over = false;
-      const spawn = () => {
-        let p;
-        do { p = { x: Math.floor(Math.random() * N), y: Math.floor(Math.random() * N) }; }
-        while (body.some(b => b.x === p.x && b.y === p.y));
-        return p;
-      };
-      let food = spawn();
-
-      const draw = () => {
-        x.fillStyle = bg; x.fillRect(0, 0, size, size);
-        x.fillStyle = gold; x.fillRect(food.x * cs + 2, food.y * cs + 2, cs - 4, cs - 4);
-        body.forEach((b, i) => { x.fillStyle = i ? fg : '#ffffff'; x.fillRect(b.x * cs + 1, b.y * cs + 1, cs - 2, cs - 2); });
-        info.textContent = `score ${score}   best ${best}`;
-      };
-      const close = () => {
-        clearInterval(timer);
-        document.removeEventListener('keydown', onKey, true);
-        wrap.remove();
-        print(`snake: scored <span class="y">${score}</span>${score && score >= best ? ' <span class="t">(new best!)</span>' : ''}. Type <span class="t">snake</span> to go again.`);
-        done();
-      };
-      const end = () => {
-        over = true; clearInterval(timer);
-        if (score > best) { best = score; try { localStorage.setItem('snake', best); } catch (e) {} }
-        draw();
-        x.fillStyle = 'rgba(0,0,0,.6)'; x.fillRect(0, 0, size, size);
-        x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = '600 20px monospace';
-        x.fillText('game over', size / 2, size / 2 - 6);
-        x.font = '14px monospace';
-        x.fillText('Enter or tap to close', size / 2, size / 2 + 18);
-        c.onclick = close;
-      };
-      const tick = () => {
-        dir = next;
-        const h = { x: body[0].x + dir.x, y: body[0].y + dir.y };
-        if (h.x < 0 || h.y < 0 || h.x >= N || h.y >= N || body.some(b => b.x === h.x && b.y === h.y)) return end();
-        body.unshift(h);
-        if (h.x === food.x && h.y === food.y) { score++; food = spawn(); } else body.pop();
-        draw();
-      };
-      const turn = (nx, ny) => { if (nx !== -dir.x || ny !== -dir.y) next = { x: nx, y: ny }; };
-      const KEYS = { ArrowUp: [0, -1], w: [0, -1], ArrowDown: [0, 1], s: [0, 1], ArrowLeft: [-1, 0], a: [-1, 0], ArrowRight: [1, 0], d: [1, 0] };
-      const onKey = e => {
-        if (e.key === 'Escape' || (over && e.key === 'Enter')) { e.preventDefault(); return close(); }
-        const k = KEYS[e.key] || KEYS[e.key.toLowerCase()];
-        if (k && !over) { e.preventDefault(); turn(k[0], k[1]); }
-      };
-      document.addEventListener('keydown', onKey, true);
-      let t0;
-      wrap.addEventListener('touchstart', e => { t0 = e.touches[0]; }, { passive: true });
-      wrap.addEventListener('touchend', e => {
-        if (!t0 || over) return;
-        const t = e.changedTouches[0], dx = t.clientX - t0.clientX, dy = t.clientY - t0.clientY;
-        if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) return;
-        if (Math.abs(dx) > Math.abs(dy)) turn(dx > 0 ? 1 : -1, 0); else turn(0, dy > 0 ? 1 : -1);
-      });
-      draw();
-      const timer = setInterval(tick, 110);
-    });
+  snake() { return arcade('snake', 'Arrows, WASD or swipe. Esc to quit.', 20, 20, snakeGame); },
+  run() { return arcade('run', 'Tap, Space or Up to jump. Esc to quit.', 24, 12, dinoGame); },
+  games() {
+    print(`<span class="y">games</span>
+  snake     eat, grow, restart
+  run       jump the cacti
+  guess     guess my number
+  typing    typing speed test
+  roulette  what to build today`);
+  },
+  guess() {
+    const n = 1 + Math.floor(Math.random() * 100); let t = 0;
+    print('I picked a number from 1 to 100. Type guesses, or q to quit.');
+    mode = v => {
+      if (v === 'q') { mode = null; print(`It was ${n}.`, 'dim'); return; }
+      const k = +v;
+      if (!Number.isInteger(k) || k < 1 || k > 100) { print('numbers 1-100 only', 'dim'); return; }
+      t++;
+      if (k === n) { mode = null; print(`<span class="t">Got it in ${t}!</span> Type guess to go again.`); }
+      else print(k < n ? 'higher ↑' : 'lower ↓', 'y');
+    };
+  },
+  typing() {
+    const s = pick(['the quick brown fox jumps over the lazy dog', 'ship the ugly version then make it pretty', 'every local shop deserves a fast website', 'a good commit message saves future you']);
+    print('Type this, then press Enter:'); print(s, 'y');
+    const t0 = Date.now();
+    mode = v => {
+      mode = null;
+      const sec = Math.max(1, (Date.now() - t0) / 1000);
+      let ok = 0; for (let i = 0; i < s.length; i++) if (v[i] === s[i]) ok++;
+      const wpm = Math.round(v.length / 5 / (sec / 60));
+      print(`${wpm} wpm, ${Math.round(100 * ok / s.length)}% accurate. ${wpm > 60 ? 'Fast.' : 'Warm up with snake.'}`);
+    };
+  },
+  vim() {
+    print('-- INSERT --  you are trapped. Type :q to escape.', 'dim');
+    mode = v => {
+      if (/^:(q|wq|x)!?$/.test(v)) { mode = null; print('phew. escaped.', 'dim'); }
+      else printText('E492: not an editor command: ' + v, 'r');
+    };
+  },
+  hello() { print(pick(['Hello, visitor. Need a website?', 'Hey! Try <span class="t">games</span>.', 'Namaste. Type <span class="t">help</span>.'])); },
+  hi() { return CMDS.hello(); },
+  '8ball'(q) { print(q ? pick(['Signs point to yes.', 'Ask again after chai.', 'Outlook good.', 'Very doubtful.', 'Ship it.', 'Not today.', 'Without a doubt.']) : 'Ask a question first: 8ball will I get a client today', 'y'); },
+  flip() { print(Math.random() < .5 ? 'heads' : 'tails', 'y'); },
+  roll(a) { const n = Math.min(1000, Math.max(2, parseInt(a, 10) || 6)); print(`d${n}: <span class="y">${1 + Math.floor(Math.random() * n)}</span>`); },
+  joke() { print(pick(['Why do developers love dark mode? Light attracts bugs.', 'A SQL query walks into a bar, sees two tables and asks: can I join you?', 'There are 10 kinds of people: those who get binary and those who do not.', 'I would tell you a UDP joke, but you might not get it.']), 'y'); },
+  pwd() { print('/home/visitor/yatharth-webs'); },
+  uname() { print('YatharthOS 1.0 chai-kernel delhi x86_64'); },
+  uptime() { print('up 5 days, 0 shops without a website', 'dim'); },
+  rickroll() { print('you asked for it: ' + link('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'click')); },
+  async bsod() {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:fixed;inset:0;height:100dvh;z-index:9;background:#0078d7;color:#fff;padding:10vw 8vw;font:16px/1.6 monospace';
+    d.innerHTML = ':(<br><br>Your portfolio ran into a problem and needs a website.<br><br>Stop code: NO_WEBSITE_FOUND<br><br>(tap to restart. it was a joke)';
+    document.body.appendChild(d);
+    await new Promise(r => { d.onclick = () => { d.remove(); r(); }; setTimeout(() => { d.remove(); r(); }, 4500); });
+  },
+  async reboot() {
+    CMDS.clear();
+    for (const l of ['BIOS check... ok', 'loading yatharth.kernel... ok', 'mounting chai... ok', 'starting websites... ok']) { print(l, 'dim'); await wait(reduce ? 0 : 350); }
+    print('Welcome back. Type <span class="t">help</span>.');
   },
   exit() { print('logging out...', 'dim'); setTimeout(() => { location.href = HOME; }, reduce ? 0 : 500); },
   home() { return CMDS.exit(); },
@@ -379,7 +510,10 @@ First chat to live site in five days, pricing from ₹1,500.`);
   history() { print(hist.length ? hist.map((h, i) => `${String(i + 1).padStart(3)}  ${h}`).join('\n').replace(/</g, '&lt;') : 'nothing yet', 'dim'); },
   rm() { print('<span class="r">Nice try.</span> This portfolio is read-only, and so is my patience.'); },
   sudo(arg) {
-    if (/^rm\b/.test((arg || '').trim())) return CMDS.rm();
+    const a = (arg || '').trim();
+    if (/^rm\b/.test(a)) return CMDS.rm();
+    if (/^reboot\b/.test(a)) return CMDS.reboot();
+    if (/sandwich/.test(a)) { print('Okay. 🥪'); return; }
     print('<span class="r">visitor is not in the sudoers file.</span> This incident will be reported to chai.');
   },
   whoami() { print('a visitor with good taste'); },
@@ -399,7 +533,7 @@ const hist = []; let hi = 0; let busy = false;
 // prompt row
 const row = document.createElement('div');
 row.id = 'row';
-row.innerHTML = '<label for="in">visitor@webs:~$</label><input id="in" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Command">';
+row.innerHTML = '<label for="in"><span class="pf">visitor@webs:</span>~$</label><input id="in" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Command">';
 term.appendChild(row);
 const input = row.querySelector('input');
 
@@ -407,17 +541,18 @@ async function run(raw) {
   const cmd = raw.trim().toLowerCase();
   if (!cmd) return;
   hist.push(cmd); hi = hist.length;
-  const echo = print('<span class="t">visitor@webs:~$</span> ');
+  const echo = print('<span class="t"><span class="pf">visitor@webs:</span>~$</span> ');
   echo.appendChild(document.createTextNode(raw));
-  busy = true; input.disabled = true;
+  busy = true; input.readOnly = true;
   try {
+    if (mode) { await mode(raw.trim()); return; }
     const [head, ...rest] = raw.trim().split(/\s+/);
     const name = head.toLowerCase();
     if (Object.hasOwn(CMDS, cmd)) await CMDS[cmd]();
     else if (Object.hasOwn(CMDS, name)) await CMDS[name](rest.join(' '));
     else print(`command not found: <span class="r"></span>. Type <span class="t">help</span>.`).querySelector('.r').textContent = cmd;
   } finally {
-    busy = false; input.disabled = false; input.focus();
+    busy = false; input.readOnly = false; if (!matchMedia('(pointer:coarse)').matches) input.focus();
     term.scrollTop = term.scrollHeight;
   }
 }
@@ -433,7 +568,7 @@ input.addEventListener('keydown', e => {
   } else if (e.key === 'l' && e.ctrlKey) { e.preventDefault(); CMDS.clear(); }
 });
 
-['about', 'projects', 'pricing', 'contact', 'roulette', 'neofetch', 'theme', 'matrix', 'snake', 'exit', 'help'].forEach(n => {
+['help', 'about', 'projects', 'pricing', 'contact', 'games', 'snake', 'run', 'roulette', 'matrix', 'theme', 'neofetch', 'exit'].forEach(n => {
   const b = document.createElement('button');
   b.textContent = n;
   b.onclick = () => { if (!busy) run(n); };
@@ -443,7 +578,7 @@ term.addEventListener('click', e => { if (!getSelection().toString() && e.target
 
 try { const t = localStorage.getItem('theme'); if (t) { CMDS.theme(t); [...term.querySelectorAll('.line')].pop().remove(); } } catch (e) {}
 print('<span class="y">Yatharth Webs</span> terminal. Type <span class="t">help</span> for a lot more commands, or hit <span class="t">roulette</span> to get something to build.');
-input.focus();
+if (!matchMedia('(pointer:coarse)').matches) input.focus();
 </script>
 </body>
 </html>
