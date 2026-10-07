@@ -115,7 +115,7 @@
       <button class="btn y" id="moreBtn" aria-haspopup="dialog">View more projects <b id="moreCount">+5</b></button>
       <a class="btn" href="projects.html">Browse full project directory</a>
     </div>
-    <p class="note">Manzil, Bhatti and Kaagaz are sample mockups made to show what's possible — not paid client work. Yours could be next.</p>
+    <p class="note">Manzil, Bhatti, Kaagaz and Auren Frame are sample mockups made to show what's possible — not paid client work. Yours could be next.</p>
   </div>
 </section>
 
@@ -320,11 +320,16 @@ const tk = $('#ticker');
 tk.innerHTML = [0,1].map(() => tickItems.map(t => `<span>${t}</span>`).join('')).join('');
 
 /* hero search demo */
-const DEMOS = [
-  { q:'performance nutrition india', p:PROJECTS[0] },
-  { q:'door handles chawri bazar delhi', p:PROJECTS[5] },
-  { q:'gold jewellery hyderabad', p:PROJECTS[6] }
+/* Pinned by project id (not array position), so adding or reordering projects in
+   assets/projects.js can never change what this panel shows. */
+const DEMO_QUERIES = [
+  { q:'performance nutrition india',      id:'ideserve'  },
+  { q:'door handles chawri bazar delhi',  id:'ginniplus' },
+  { q:'gold jewellery hyderabad',         id:'trishla'   }
 ];
+const DEMOS = DEMO_QUERIES
+  .map(d => ({ q:d.q, p:PROJECTS.find(p => p.id === d.id) }))
+  .filter(d => d.p);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 function showResult(p){
   $('#resFav').textContent = p.glyph;
