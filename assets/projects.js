@@ -29,7 +29,7 @@ const PROJECTS = [
     desc:'Certified natural gemstone store with astrologer-matched picks: a nine-planet collection with a drag-to-turn stone, lab reports with every stone and a free consultation flow.',
     a:'#f7f2e8', b:'#e4d6b8', c:'#7a2e3a' },
   { id:'techfinds', featured:false, cat:'mockup', kind:'Tech customisation', name:'Tech Finds', glyph:'TF',
-    url:'https://tech-findss.netlify.app/', host:'tech-findss.netlify.app',
+    url:'https://tech-findss.netlify.app/', host:'techfinds',
     desc:'Customisation-first prototype for phone cases, laptop skins, keyboards and mice \u2014 a live 2D studio with sample pricing, a guided setup strategist and a one-theme-across-your-setup preview. Idea and design vision by me.',
     a:'#0f1220', b:'#262b4a', c:'#e0b45a' },
   { id:'echo', featured:false, cat:'own', kind:'Not a shop demo — this one\u2019s mine', name:'EchoBridge', glyph:'E',
