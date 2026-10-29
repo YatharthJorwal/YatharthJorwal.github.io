@@ -28,6 +28,10 @@ const PROJECTS = [
     url:'https://yatharthwebs.site/Mockup-vedicratna/', host:'vedicratna',
     desc:'Certified natural gemstone store with astrologer-matched picks: a nine-planet collection with a drag-to-turn stone, lab reports with every stone and a free consultation flow.',
     a:'#f7f2e8', b:'#e4d6b8', c:'#7a2e3a' },
+  { id:'techfinds', featured:false, cat:'mockup', kind:'Tech customisation', name:'Tech Finds', glyph:'TF',
+    url:'https://tech-findss.netlify.app/', host:'tech-findss.netlify.app',
+    desc:'Customisation-first prototype for phone cases, laptop skins, keyboards and mice \u2014 a live 2D studio with sample pricing, a guided setup strategist and a one-theme-across-your-setup preview. Idea and design vision by me.',
+    a:'#0f1220', b:'#262b4a', c:'#e0b45a' },
   { id:'echo', featured:false, cat:'own', kind:'Not a shop demo — this one\u2019s mine', name:'EchoBridge', glyph:'E',
     url:'https://echo-bridge.in/', host:'echo-bridge.in',
     desc:'An AI-powered digital wellness concept: echo-chamber detection, perspective balancing and a companion biometric ring. Built solo, with a working landing page and a demo sign-up and pricing flow.',
@@ -40,6 +44,14 @@ const PROJECTS = [
     url:'https://detent-keys.netlify.app/', host:'detent-keys.netlify.app',
     desc:'Made-to-order mechanical keyboards: build a board layer by layer \u2014 case, plate, switches, keycaps \u2014 and see it in 3D before you order. Six concept colourways, live pricing and a quote flow.',
     a:'#15171a', b:'#2f343b', c:'#f0a03c' },
+  { id:'pagani', featured:false, cat:'own', kind:'Scroll-driven 3D film', name:'Pagani Imola', glyph:'P',
+    url:'https://pagani-imola.netlify.app/', host:'pagani-imola.netlify.app',
+    desc:'A scroll-driven 3D showcase of the Pagani Imola \u2014 scroll to circle the car, click any part for detail on aerodynamics, finish, powertrain and materials. A study in cinematic web storytelling.',
+    a:'#070b1c', b:'#16265a', c:'#8fb4ff' },
+  { id:'tigerking', featured:false, cat:'own', kind:'Illustrated scroll story', name:'The Tiger King', glyph:'TK',
+    url:'https://yatharthwebs.site/The-Tiger-King/', host:'yatharthwebs.site/The-Tiger-King',
+    desc:'A scroll-driven illustrated retelling of Kalki\u2019s short story in a Rajasthani miniature-inspired style, with a literary analysis alongside.',
+    a:'#2a0f0a', b:'#7a2e14', c:'#f0b84a' },
   { id:'ginniplus', featured:true, cat:'shop', kind:'Hardware retailer', name:'Ginni Plus', glyph:'G',
     url:'https://www.ginniplus.com/', host:'ginniplus.com',
     desc:'Door handle and hardware dealer in Chawri Bazar, Delhi — full product catalogue across handles, knobs and fittings, showroom details and WhatsApp-first customer support.',
@@ -47,7 +59,11 @@ const PROJECTS = [
   { id:'trishla', featured:true, cat:'shop', kind:'Jewellery e-commerce', name:'Trishla Gold', glyph:'T',
     url:'https://trishlagolddiamonds.netlify.app/', host:'trishlagolddiamonds.netlify.app',
     desc:'Fine gold jewellery store for a Hyderabad showroom — full catalogue with category browsing, product pages, a working bag/checkout flow with UPI, card and COD, and store/contact details.',
-    a:'#1a1408', b:'#4a3a12', c:'#e8c766' }
+    a:'#1a1408', b:'#4a3a12', c:'#e8c766' },
+  { id:'isha', featured:false, cat:'shop', kind:'Leather manufacturer', name:'Isha Fashions', glyph:'I',
+    url:'https://ishafashion.netlify.app/', host:'ishafashion.netlify.app',
+    desc:'B2B site for a leather outerwear and accessories maker \u2014 product ranges, a sketch-to-shipment process, MOQ and lead-time table, and a quote enquiry form for fashion brands.',
+    a:'#f5efee', b:'#d9bfc4', c:'#5a2a4a' }
 ];
 const CAT_LABELS = { shop:'Live client sites', mockup:'Mockup templates', own:'My own build' };
 const CAT_BLURB = {
