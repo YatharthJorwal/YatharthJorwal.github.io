@@ -1,307 +1,547 @@
+/* ============================================================================
+   YATHARTH WEBS · "GRAPHITE" THEME · shared stylesheet
+   Used by index.html, about.html, projects.html (terminal.html is standalone).
+   Motion layer: assets/fx.js (load with <script src="assets/fx.js" defer></script>).
 
+   FONTS (one <link> per page)
+     https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=JetBrains+Mono:wght@400..700&family=Space+Grotesk:wght@400..700&display=swap
+
+   TOKENS  see :root. These are the only theme tokens. The old crayon tokens
+     (ink, paper, card, white, yellow, teal, muted-inverse ...) are gone.
+
+   WHAT IS IN HERE (in file order)
+     1  tokens            7  ticker             13 reviews
+     2  base + type       8  difference         14 forms
+     3  ambient bg        9  work + thumbs      15 enquire + handles
+     4  utilities        10  modal              16 footer + fab
+     5  nav              11  process timeline   17 motion hooks for fx.js
+     6  buttons          12  pricing            18 responsive, reduced motion
+
+   NEW SHARED PIECES (full list with markup in section 4 and 17)
+     .kicker  .grad-text (also: <em> inside h1/h2)  .glass (+ .lift)  .badge
+     .is-featured  .live-dot  .handles/.handle/.h-ico/.h-txt/.h-go  .handles.mini
+     .band (+ .glow)  .page-hero  .specs  .float  .mono  .muted  .sr-only  .hr
+     [data-tilt] [data-depth] [data-spot] [data-magnetic] [data-parallax]
+     .reveal + data-reveal="up|left|right|flip|zoom" + data-delay / data-stagger
+
+   WHICH CSS PROPERTY EACH EFFECT OWNS (so they compose instead of fighting)
+     transform : .reveal (before .in), [data-tilt] while tilting, [data-depth]
+     translate : card hover lift, [data-magnetic], [data-parallax], .float
+     ::before  : .is-featured / .tier.mid (rotating ring)
+     ::after   : [data-tilt] (glare), [data-spot] (spotlight)
+   Rules of thumb: do not put overflow:hidden, filter, opacity<1 or isolation on
+   a [data-tilt] element (it flattens the 3D layers); if an element is .reveal
+   do not give it its own `transition` unless it lists opacity and transform.
+   ========================================================================== */
+
+/* ---------- 1. tokens ---------- */
 :root{
-  --ink:#0f1b3d; --ink-2:#26315a; --muted:#59627f; --muted-inverse:#b9c1dc; --white:#fff;
-  --paper:#fafaf6; --paper-2:#f1f1ea; --card:#ffffff;
-  --line:rgba(15,27,61,.14);
-  --yellow:#ffd23f; --yellow-d:#e6b800; --teal:#2eb9b9; --teal-d:#0b7f86; --teal-l:#dcf4f4; --red:#e5383b; --green:#1c9c50; --green-d:#15803d;
-  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
-  --body:'Figtree','Segoe UI',system-ui,-apple-system,sans-serif;
-  --shadow:0 1px 0 rgba(15,27,61,.05),0 22px 44px -26px rgba(15,27,61,.45);
+  --bg:#07080c; --bg-2:#0b0d13; --surface:#10131b; --surface-2:#171b26; --surface-3:#1f2431;
+  --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.16);
+  --text:#eaeef7; --text-2:#b6bfd0; --muted:#8792a8;
+  --accent:#7c8cff; --accent-2:#b57bff; --accent-ink:#0a0b12; --accent-soft:rgba(124,140,255,.14);
+  --grad:linear-gradient(120deg,#6f86ff 0%,#a47bff 55%,#e07bff 100%);
+  --hot:#ff6a3d;
+  --green:#25d366; --green-d:#128c4a; --red:#ff5d6c; --star:#ffb545;
+  --glow:0 0 0 1px rgba(124,140,255,.45),0 18px 50px -18px rgba(124,140,255,.55);
+  --shadow:inset 0 1px 0 rgba(255,255,255,.05),0 30px 60px -30px rgba(0,0,0,.9);
+  --display:'Space Grotesk','Segoe UI',system-ui,sans-serif;
+  --body:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
   /* type scale */
   --fs-2xs:.78rem; --fs-xs:.85rem; --fs-sm:.92rem; --fs-md:1.15rem;
   --fs-lg:1.35rem; --fs-xl:1.8rem; --fs-2xl:2.1rem; --fs-3xl:3.4rem;
   /* radius scale */
-  --r-lg:20px; --r-md:14px; --r-sm:10px; --r-xs:6px;
+  --r-lg:18px; --r-md:14px; --r-sm:10px; --r-xs:6px;
 }
+/* motion helper (not a theme token): the one easing curve used everywhere */
+:root{--ease:cubic-bezier(.2,.8,.2,1)}
+/* animatable angle for .is-featured; browsers without @property keep a static ring */
+@property --fx-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+
+/* ---------- 2. base + type ---------- */
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:76px;overflow-x:hidden}
-body{font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.6;font-size:17px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html{color-scheme:dark;background:var(--bg);scroll-behavior:smooth;scroll-padding-top:76px;overflow-x:hidden;scrollbar-color:rgba(255,255,255,.2) transparent;-webkit-text-size-adjust:100%}
+/* body stays transparent so the fixed ambient layer (z-index:-1) shows through. overflow-x:clip keeps the nav sticky. */
+body{font-family:var(--body);background:transparent;color:var(--text);line-height:1.65;font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:clip}   /* clip only: a hidden fallback here would stop the nav sticking on older Safari; html already blocks sideways scroll */
 img,svg{max-width:100%;display:block}
 a{color:inherit}
 button,input,select,textarea{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--red);outline-offset:3px;border-radius:6px}
+::selection{background:rgba(124,140,255,.38);color:#fff}
+:focus-visible{outline:2px solid #aab5ff;outline-offset:3px}
 .wrap{width:min(1120px,100% - 40px);margin-inline:auto}
-h1,h2,h3{font-family:var(--display);line-height:1.08;letter-spacing:-.02em}
-h2{font-size:clamp(1.9rem,4vw,3rem);font-weight:750;max-width:18ch}
-h3{font-size:1.25rem;font-weight:700}
-.lead{color:var(--muted);max-width:56ch;margin-top:14px}
-section{padding:96px 0}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.08;letter-spacing:-.025em;color:var(--text);text-wrap:balance}
+h1{font-size:clamp(2.3rem,5.4vw,4rem);font-weight:700;letter-spacing:-.04em;line-height:1.02}
+h2{font-size:clamp(1.9rem,4vw,3rem);font-weight:700;letter-spacing:-.035em;max-width:20ch}
+h3{font-size:1.25rem;font-weight:600}
+h4{font-size:1rem;font-weight:600}
+.lead{color:var(--text-2);max-width:56ch;margin-top:14px}
+section{position:relative;padding:96px 0}
+/* inline text links (links with a class are components and style themselves) */
+:where(p,li,dd) a:not([class]){color:#b9c2ff;text-decoration:underline;text-decoration-color:rgba(124,140,255,.55);text-underline-offset:3px;transition:color .2s}
+:where(p,li,dd) a:not([class]):hover{color:#fff}
+hr,.hr{border:0;height:1px;background:linear-gradient(90deg,transparent,var(--line-2),transparent)}
 
-/* progress */
-.progress{position:fixed;inset:0 0 auto 0;height:4px;z-index:60;background:transparent}
-.progress i{display:block;height:100%;width:0;background:var(--teal)}
+/* scroll progress (pages set #bar width) */
+.progress{position:fixed;inset:0 0 auto 0;height:2px;z-index:60;background:transparent;pointer-events:none}
+.progress i{display:block;height:100%;width:0;background:var(--grad);box-shadow:0 0 12px rgba(124,140,255,.9)}
 
-/* nav */
-.nav{position:sticky;top:0;z-index:50;background:rgba(250,250,246,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+/* ---------- 3. ambient background ----------
+   body::before = static soft glows (works with no JS).
+   .fx-bg       = injected by fx.js as the first child of <body>: grid + drifting orbs
+                  (+ a 2D canvas field and a cursor glow on capable fine-pointer devices). */
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:
+  radial-gradient(62% 48% at 84% -8%,rgba(111,134,255,.13),transparent 70%),
+  radial-gradient(48% 42% at -6% 62%,rgba(181,123,255,.07),transparent 70%)}
+.fx-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;contain:strict}
+.fx-bg>*{position:absolute;display:block}
+.fx-grid{inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:64px 64px;-webkit-mask-image:radial-gradient(ellipse 110% 85% at 50% 0%,#000 30%,transparent 88%);mask-image:radial-gradient(ellipse 110% 85% at 50% 0%,#000 30%,transparent 88%)}
+.fx-orb{border-radius:50%;will-change:transform}
+.fx-orb-a{right:-20vmax;top:-24vmax;width:64vmax;height:64vmax;background:radial-gradient(closest-side,rgba(111,134,255,.17),rgba(111,134,255,.05) 55%,transparent);animation:fx-drift-a 36s ease-in-out infinite alternate}
+.fx-orb-b{left:-26vmax;top:26vh;width:58vmax;height:58vmax;background:radial-gradient(closest-side,rgba(181,123,255,.11),transparent);animation:fx-drift-b 44s ease-in-out infinite alternate}
+.fx-orb-c{right:4vw;bottom:-32vmax;width:52vmax;height:52vmax;background:radial-gradient(closest-side,rgba(224,123,255,.08),transparent);animation:fx-drift-c 52s ease-in-out infinite alternate}
+@keyframes fx-drift-a{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-10vw,8vh,0) scale(1.14)}}
+@keyframes fx-drift-b{from{transform:translate3d(0,0,0) scale(1.08)}to{transform:translate3d(11vw,-9vh,0) scale(.92)}}
+@keyframes fx-drift-c{from{transform:translate3d(0,0,0) scale(.94)}to{transform:translate3d(-8vw,-10vh,0) scale(1.12)}}
+.fx-canvas{inset:0;width:100%;height:100%;opacity:0;transition:opacity 1.4s ease}
+.fx-bg.is-canvas .fx-canvas{opacity:1}
+.fx-cursor{left:-320px;top:-320px;width:640px;height:640px;border-radius:50%;background:radial-gradient(closest-side,rgba(124,140,255,.11),transparent);opacity:0;transition:opacity .6s ease;will-change:transform}
+.fx-bg.has-pointer .fx-cursor{opacity:1}
+
+/* ---------- 4. utilities (new shared pieces) ---------- */
+/* .kicker  mono label above a heading:  <p class="kicker">Process</p><h2>...</h2>  (add .center to centre it) */
+.kicker{display:flex;align-items:center;gap:10px;margin:0 0 16px;font:500 .72rem/1.3 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.kicker::before{content:"";flex:none;width:18px;height:2px;border-radius:2px;background:var(--grad);box-shadow:0 0 12px rgba(124,140,255,.9)}
+.kicker.center{justify-content:center}
+/* .grad-text  gradient text for one or two words; <em> inside h1/h2 does the same */
+.grad-text,h1 em,h2 em{font-style:normal;color:var(--accent)}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .grad-text,h1 em,h2 em{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+}
+/* .glass  the card surface. Add .lift for a hover lift. (.panel .project .tier .step .rev-stage .form-card already are glass) */
+.glass,.panel,.project,.tier,.step,.rev-stage,.form-card{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015)),var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);transition:translate .35s var(--ease),border-color .3s ease,box-shadow .35s ease,background-color .3s ease}
+.glass{padding:24px}
+@media (hover:hover){
+  .glass:hover,.panel:hover,.project:hover,.tier:hover,.step:hover{border-color:rgba(124,140,255,.42);box-shadow:var(--shadow),var(--glow)}
+  .glass.lift:hover,.project:hover,.tier:hover,.diff-grid .panel:hover{translate:0 -5px}
+  .rev-stage:hover,.form-card:hover{border-color:var(--line-2)}
+}
+/* .badge  small mono pill:  <span class="badge">Live</span>   variants: .accent .hot .green */
+.badge{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:999px;border:1px solid var(--line-2);background:rgba(255,255,255,.04);font:500 .68rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-2);white-space:nowrap}
+.badge.accent{border-color:rgba(124,140,255,.42);background:var(--accent-soft);color:#c6cdff}
+.badge.hot{border-color:rgba(255,106,61,.45);background:rgba(255,106,61,.12);color:#ffb7a0}
+.badge.green{border-color:rgba(37,211,102,.4);background:rgba(37,211,102,.1);color:#8ff0b6}
+/* .live-dot  pulsing dot:  <i class="live-dot"></i>   variants: .green .accent (default is --hot) */
+.live-dot{position:relative;display:inline-block;flex:none;width:8px;height:8px;border-radius:50%;background:var(--hot);box-shadow:0 0 10px rgba(255,106,61,.85);vertical-align:middle}
+.live-dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:inherit;animation:fx-pulse 2.2s ease-out infinite}
+.live-dot.green{background:var(--green);box-shadow:0 0 10px rgba(37,211,102,.85)}
+.live-dot.accent{background:var(--accent);box-shadow:0 0 10px rgba(124,140,255,.9)}
+@keyframes fx-pulse{from{transform:scale(1);opacity:.7}to{transform:scale(3.4);opacity:0}}
+/* .is-featured  card with a slowly rotating conic accent ring (uses ::before). .tier.mid gets it automatically. */
+:where(.is-featured){position:relative}
+.is-featured,.tier.mid{border-color:rgba(124,140,255,.4);box-shadow:var(--shadow),0 0 0 1px rgba(124,140,255,.1),0 34px 90px -44px rgba(124,140,255,.75)}
+.is-featured::before,.tier.mid::before{content:"";position:absolute;inset:-1px;z-index:1;padding:1px;border-radius:inherit;pointer-events:none;
+  background:conic-gradient(from var(--fx-angle,0deg),rgba(124,140,255,0) 0deg,rgba(124,140,255,0) 205deg,#6f86ff 265deg,#e07bff 322deg,#fff 342deg,rgba(124,140,255,0) 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  animation:fx-spin 7s linear infinite}
+@keyframes fx-spin{to{--fx-angle:360deg}}
+/* .band  a section on --bg-2 with hairlines; .band.glow adds a soft accent glow at its top edge */
+#work,#reviews,.band{background:rgba(11,13,19,.82);border-block:1px solid var(--line)}
+#process,#enquire,.band.glow{background:radial-gradient(64% 58% at 50% 0%,rgba(124,140,255,.1),transparent 72%),rgba(11,13,19,.82);border-block:1px solid var(--line)}
+#process::before,#enquire::before,.band.glow::before{content:"";position:absolute;top:-1px;left:50%;width:min(680px,80%);height:1px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,rgba(124,140,255,.8),transparent);pointer-events:none}
+.band+.band,#work+#process,#reviews+#enquire{border-top:0}
+/* .page-hero  top section of an inner page (about / projects): kicker + h1 + .lead */
+.page-hero{padding:72px 0 28px}
+.page-hero h1{max-width:18ch}
+.page-hero .lead{font-size:1.06rem}
+/* .specs  spec-sheet rows:  <dl class="specs"><div><dt>Turnaround</dt><dd>5 days</dd></div>...</dl> */
+.specs{display:grid;border-top:1px solid var(--line)}
+.specs>div{display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:11px 0;border-bottom:1px solid var(--line)}
+.specs dt{font:500 .72rem/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.specs dd{font-weight:600;text-align:right;color:var(--text)}
+/* small helpers */
+.mono{font-family:var(--mono);font-size:.78em;letter-spacing:.1em;text-transform:uppercase}
+.muted{color:var(--muted)}
+.sr-only{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+.float{animation:fx-float 7s ease-in-out infinite alternate}
+@keyframes fx-float{from{translate:0 -5px}to{translate:0 6px}}
+
+/* ---------- 5. nav ---------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(7,8,12,.62);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);border-bottom:1px solid var(--line);transition:background-color .3s ease,box-shadow .3s ease}
+.nav::after{content:"";position:absolute;left:50%;bottom:-1px;width:min(560px,70%);height:1px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,rgba(124,140,255,.75),transparent);opacity:0;transition:opacity .4s ease;pointer-events:none}
+.nav.is-scrolled{background:rgba(7,8,12,.86);box-shadow:0 18px 40px -28px rgba(0,0,0,.95)}
+.nav.is-scrolled::after{opacity:1}
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:750;font-size:1.15rem;letter-spacing:-.02em}
-.brand img{height:31px;width:auto;display:block}
-.links{display:flex;gap:26px;font-weight:600;font-size:.95rem}
-.links a{text-decoration:none;color:var(--ink-2);padding:6px 0;background:linear-gradient(var(--teal),var(--teal)) 0 100%/0 3px no-repeat;transition:background-size .25s}
-.links a:hover{background-size:100% 3px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 22px;border-radius:999px;border:2px solid var(--ink);font-weight:700;text-decoration:none;cursor:pointer;background:var(--card);transition:transform .15s,box-shadow .15s;box-shadow:3px 3px 0 var(--ink)}
-.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
-.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
-.btn.y{background:var(--yellow)}
-.btn.ink{background:var(--ink);color:var(--yellow)}
-.btn.wa{background:var(--green);color:#fff;border-color:var(--ink)}
-.btn.sm{padding:9px 16px;font-size:.92rem}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:700;font-size:1.15rem;letter-spacing:-.02em;color:var(--text)}
+.brand img{height:31px;width:auto;display:block;filter:brightness(0) invert(1)}
+.links{display:flex;gap:28px;font-weight:500;font-size:.92rem}
+.links a{position:relative;text-decoration:none;color:var(--text-2);padding:8px 0;transition:color .2s ease}
+.links a::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:1px;background:var(--grad);box-shadow:0 0 10px rgba(124,140,255,.9);transform:scaleX(0);transform-origin:0 50%;transition:transform .35s var(--ease)}
+.links a:hover,.links a[aria-current="page"]{color:var(--text)}
+.links a:hover::after,.links a[aria-current="page"]::after{transform:scaleX(1)}
+
+/* ---------- 6. buttons ----------
+   .btn = glass pill · .btn.y / .btn.ink = PRIMARY (gradient, dark text) · .btn.wa = WhatsApp green · .btn.sm = small */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 22px;border-radius:999px;border:1px solid var(--line-2);font-weight:600;font-size:.95rem;line-height:1.3;text-align:center;text-decoration:none;cursor:pointer;color:var(--text);background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.03));box-shadow:inset 0 1px 0 rgba(255,255,255,.08);transition:transform .2s var(--ease),translate .45s var(--ease),box-shadow .3s ease,background-color .3s ease,border-color .3s ease,color .3s ease}
+.btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.34);background-color:rgba(255,255,255,.06)}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn.y,.btn.ink{background:var(--grad);border-color:transparent;color:var(--accent-ink);font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 12px 32px -14px rgba(124,140,255,.75)}
+.btn.y:hover,.btn.ink:hover{border-color:transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),var(--glow)}
+/* sheen that sweeps across primary buttons on hover */
+.btn.y::after,.btn.ink::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 32%,rgba(255,255,255,.5) 50%,transparent 68%);transform:translateX(-130%);pointer-events:none}
+.btn.y:hover::after,.btn.ink:hover::after{transform:translateX(130%);transition:transform .8s var(--ease)}
+.btn.wa{background:linear-gradient(180deg,#3be37f,var(--green));border-color:transparent;color:#03170a;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 12px 30px -16px rgba(37,211,102,.7)}
+.btn.wa:hover{border-color:transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 0 1px rgba(37,211,102,.5),0 18px 46px -18px rgba(37,211,102,.7)}
+.btn.sm{padding:8px 15px;font-size:.88rem}
 .btn svg{width:18px;height:18px;flex:none}
-
-/* hero */
-.hero{padding:64px 0 56px;position:relative}
-.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
-.hero h1{font-size:clamp(2.7rem,6.2vw,5.2rem);font-weight:800;letter-spacing:-.035em}
-.hero p.lead{font-size:1.1rem;margin-top:22px}
 .cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+
+/* headline numbers. index.html uses .stats/.stat inside .desk-facts (laid out in desk.css) */
 .stats{display:flex;gap:34px;margin-top:40px;flex-wrap:wrap}
-.stat b{display:block;font-family:var(--display);font-size:2rem;font-weight:800;letter-spacing:-.03em}
+.stat b{display:block;font-family:var(--display);font-size:2rem;font-weight:700;letter-spacing:-.03em;line-height:1.15;color:var(--text)}
 .stat>span{font-size:.9rem;color:var(--muted)}
-.stat b .num{font:inherit;color:inherit;letter-spacing:inherit}
 
-/* search demo */
-.serp{background:var(--card);border:2px solid var(--ink);border-radius:var(--r-lg);padding:22px;box-shadow:8px 8px 0 var(--ink);position:relative;transform:rotate(1.2deg)}
-.serp-bar{display:flex;align-items:center;gap:12px;border:2px solid var(--ink);border-radius:999px;padding:11px 18px;font-weight:600;min-height:52px;background:var(--paper)}
-.serp-bar svg{width:20px;height:20px;flex:none;color:var(--teal-d)}
-.caret{display:inline-block;width:2px;height:1.1em;background:var(--ink);margin-left:2px;vertical-align:-3px;animation:blink 1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-.res{margin-top:18px;padding:16px;border-radius:var(--r-md);border:2px solid var(--yellow-d);background:#fffbe6;opacity:0;transform:translateY(10px) scale(.98);transition:opacity .4s,transform .4s;min-height:150px}
-.res.show{opacity:1;transform:none}
-.res-u{display:flex;align-items:center;gap:9px;font-size:.85rem;color:var(--muted);font-weight:600}
-.fav{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--yellow);font-size:.72rem;font-weight:800;font-family:var(--display)}
-.res-t{font-family:var(--display);font-weight:700;font-size:1.25rem;color:var(--teal-d);margin-top:6px}
-.res-d{font-size:.95rem;color:var(--ink-2);margin-top:4px}
-.res-a{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.res-a span{font-size:.8rem;font-weight:700;padding:5px 12px;border:1.5px solid var(--ink);border-radius:999px;background:#fff}
-.ghost{margin-top:14px;display:grid;gap:9px;opacity:.55}
-.ghost i{display:block;height:10px;border-radius:5px;background:var(--paper-2)}
-.ghost i:nth-child(1){width:38%;height:13px}.ghost i:nth-child(2){width:88%}.ghost i:nth-child(3){width:64%}
-.tag{position:absolute;font-size:.82rem;font-weight:700;background:var(--yellow);border:2px solid var(--ink);border-radius:999px;padding:6px 13px;box-shadow:3px 3px 0 var(--ink);animation:bob 5s ease-in-out infinite}
-.tag.t1{top:-18px;right:24px}
-.tag.t2{bottom:-16px;left:26px;background:var(--teal);animation-delay:-2s}
-@keyframes bob{50%{transform:translateY(-7px)}}
-
-/* ticker */
-.ticker{background:var(--yellow);border-block:2px solid var(--ink);overflow:hidden;padding:14px 0}
-.ticker-track{display:flex;width:max-content;animation:tick 34s linear infinite}
+/* ---------- 7. ticker ---------- */
+.ticker{position:relative;overflow:hidden;padding:15px 0;border-block:1px solid var(--line);background:rgba(255,255,255,.015);-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
+.ticker-track{display:flex;width:max-content;animation:tick 38s linear infinite}
 .ticker:hover .ticker-track{animation-play-state:paused}
-.ticker span{font-family:var(--display);font-weight:700;font-size:1.15rem;padding-right:42px;white-space:nowrap;display:flex;align-items:center;gap:42px}
-.ticker span::after{content:"";width:9px;height:9px;background:var(--ink);transform:rotate(45deg)}
+.ticker span{font:500 .78rem/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--text-2);padding-right:40px;white-space:nowrap;display:flex;align-items:center;gap:40px}
+.ticker span::after{content:"";width:6px;height:6px;border-radius:1px;background:var(--accent);box-shadow:0 0 10px rgba(124,140,255,.95);transform:rotate(45deg)}
 @keyframes tick{to{transform:translateX(-50%)}}
 
-/* difference */
-.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:44px}
-.panel{background:var(--card);border:2px solid var(--ink);border-radius:var(--r-lg);padding:26px;box-shadow:var(--shadow);display:flex;flex-direction:column}
+/* ---------- 8. difference ---------- */
+.diff-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;margin-top:44px}
+.panel{padding:26px;display:flex;flex-direction:column}
 .igrid,.mini-res{min-height:132px}
-.diff-grid .panel{transition:opacity .6s,transform .25s ease,box-shadow .25s ease,background-color .25s ease,border-color .25s ease}
-.diff-grid .panel .row.me,.diff-grid .panel .miss{transition:transform .25s ease}
+.panel h3{margin:18px 0 8px}
+.panel p{color:var(--text-2);font-size:.97rem}
+.panel.bad .igrid{opacity:.8}
+.panel.win{border-color:rgba(124,140,255,.26)}
+.igrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:min(100%,330px)}
+.igrid i{aspect-ratio:1;border-radius:8px;background:var(--surface-2);border:1px solid var(--line)}
+.igrid i:nth-child(3n+1){background:var(--surface-3)}
+.igrid i:nth-child(4n){background:linear-gradient(135deg,var(--surface-3),var(--surface))}
+.miss{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font:600 .74rem/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--red);transition:transform .3s var(--ease)}
+.mini-res{display:grid;gap:10px;align-content:center;flex:1}
+.mini-res .row{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--r-sm);background:rgba(255,255,255,.03);border:1px solid var(--line);font-size:var(--fs-sm);font-weight:500;color:var(--text-2);transition:transform .3s var(--ease)}
+.mini-res .row.me{border-color:rgba(124,140,255,.6);background:var(--accent-soft);color:var(--text);font-weight:600;box-shadow:0 0 0 1px rgba(124,140,255,.2),0 14px 34px -18px rgba(124,140,255,.8)}
+.mini-res .row small{margin-left:auto;font:500 .7rem/1.3 var(--mono);letter-spacing:.06em;color:var(--muted);white-space:nowrap}
+.mini-res .row.me small{color:#c6cdff}
+.fav{display:grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;background:var(--grad);color:var(--accent-ink);font-size:.72rem;font-weight:700;font-family:var(--display)}
 @media (hover:hover){
-  .diff-grid .panel:hover,.diff-grid .panel:focus-within{transform:translateY(-6px);box-shadow:8px 8px 0 var(--ink)}
-  .diff-grid .panel.bad:hover{background:#fff1ef}
-  .diff-grid .panel.win:hover{background:var(--teal-l)}
-  .diff-grid .panel.win:hover .row.me{transform:scale(1.04)}
+  .diff-grid .panel.bad:hover{border-color:rgba(255,93,108,.4);box-shadow:var(--shadow),0 0 0 1px rgba(255,93,108,.28),0 18px 50px -22px rgba(255,93,108,.45)}
+  .diff-grid .panel.win:hover .row.me{transform:scale(1.03)}
   .diff-grid .panel.bad:hover .miss{transform:translateX(4px)}
 }
-.panel h3{margin:18px 0 8px}
-.panel p{color:var(--muted);font-size:.98rem}
-.igrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.igrid i{aspect-ratio:1;border-radius:6px;background:var(--paper-2)}
-.igrid i:nth-child(3n+1){background:#dfe3f2}.igrid i:nth-child(4n){background:#f6e3d3}
-.miss{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-weight:700;font-size:.85rem;color:var(--red)}
-.mini-res{display:grid;gap:10px}
-.mini-res .row{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--r-sm);background:#fff;border:1.5px solid var(--line);font-size:var(--fs-sm);font-weight:600}
-.mini-res .row.me{border:2px solid var(--ink);background:var(--yellow)}
-.mini-res .row small{margin-left:auto;font-weight:600;color:var(--muted)}
-.mini-res .row.me small{color:var(--ink)}
 
-/* work */
-#work{background:var(--paper-2);border-block:1px solid var(--line)}
-.work-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:24px;margin-top:44px}
-.project{display:flex;flex-direction:column;background:var(--card);border:2px solid var(--ink);border-radius:var(--r-lg);overflow:hidden;text-decoration:none;box-shadow:var(--shadow);transition:box-shadow .2s}
-.project:hover{box-shadow:7px 7px 0 var(--ink)}
+/* ---------- 9. work + project thumbnails ----------
+   The thumbnail keeps each project's own colours: --a/--b (screen gradient) and --c (glyph), set inline from projects.js */
+.work-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto;gap:24px;margin-top:44px}
+/* no overflow:hidden here on purpose: it would flatten [data-tilt] depth layers. The thumb rounds its own corners. */
+.project{display:flex;flex-direction:column;text-decoration:none;color:var(--text)}
 .project.big{grid-row:span 2}
 .project .body{padding:22px 24px 26px;display:flex;flex-direction:column;gap:8px;flex:1}
-.kind{font-size:.85rem;font-weight:700;color:var(--teal-d)}
-.project p{color:var(--muted);font-size:.97rem}
-.visit{margin-top:auto;padding-top:10px;font-weight:700;display:inline-flex;gap:8px;align-items:center}
-.visit svg{width:16px;height:16px;transition:transform .2s}
+.kind{font:500 .7rem/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.project p{color:var(--text-2);font-size:.95rem}
+.visit{margin-top:auto;padding-top:10px;font-weight:600;font-size:.92rem;display:inline-flex;gap:8px;align-items:center;color:var(--text)}
+.visit svg{width:16px;height:16px;color:var(--accent);transition:transform .25s var(--ease)}
 .project:hover .visit svg{transform:translate(3px,-3px)}
-.thumb{--a:#10275a;--b:#1e4aa8;--c:#ffd23f;padding:14px 14px 0;background:var(--ink);will-change:transform;transition:transform .15s ease-out;transform-style:preserve-3d}
+.thumb{--a:#111a33;--b:#27356b;--c:#aebcff;position:relative;padding:14px 14px 0;background:linear-gradient(180deg,#0d1017,#090b10);border-bottom:1px solid var(--line);border-radius:calc(var(--r-lg) - 1px) calc(var(--r-lg) - 1px) 0 0;overflow:hidden;transition:transform .2s ease-out}
+/* a little of the project's own colour leaks out from under the browser frame */
+.thumb::before{content:"";position:absolute;left:10%;right:10%;bottom:-40%;height:90%;border-radius:50%;background:radial-gradient(closest-side,var(--b),transparent);opacity:.4;pointer-events:none}
 .big .thumb{padding:18px 18px 0}
-.thumb .bar{display:flex;align-items:center;gap:6px;background:#fff;border-radius:var(--r-sm) var(--r-sm) 0 0;padding:8px 12px;font-size:var(--fs-2xs);color:var(--muted);font-weight:600}
-.thumb .bar i{width:9px;height:9px;border-radius:50%;background:var(--line)}
-.thumb .bar i:first-child{background:#ff6b5e}.thumb .bar i:nth-child(2){background:#ffc23f}.thumb .bar i:nth-child(3){background:#3ecf5b}
+.thumb .bar{position:relative;display:flex;align-items:center;gap:6px;background:#181c27;border:1px solid var(--line);border-bottom:0;border-radius:var(--r-sm) var(--r-sm) 0 0;padding:8px 12px;font:500 .68rem/1.3 var(--mono);letter-spacing:.04em;color:var(--muted)}
+.thumb .bar i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);flex:none}
+.thumb .bar i:first-child{background:var(--hot)}
 .thumb .bar span{margin-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .scr{position:relative;height:170px;background:linear-gradient(135deg,var(--a),var(--b));padding:22px;overflow:hidden}
+/* light sweep across the "screen" on hover */
+.scr::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.16) 50%,transparent 65%);transform:translateX(-130%);pointer-events:none}
+.project:hover .scr::after{transform:translateX(130%);transition:transform 1s var(--ease)}
 .big .scr{height:250px}
-.glyph{font-family:var(--display);font-weight:800;font-size:3.4rem;color:var(--c);line-height:1;letter-spacing:-.04em}
+/* the tall featured card: its browser window grows to fill the card, so the text sits at the bottom with no empty gap */
+.project.big .thumb{flex:1 1 auto;display:flex;flex-direction:column}
+.project.big .scr{flex:1 1 auto;height:auto;min-height:250px}
+.project.big .body{flex:0 0 auto}
+.glyph{font-family:var(--display);font-weight:700;font-size:3.4rem;color:var(--c);line-height:1;letter-spacing:-.04em;transition:transform .4s var(--ease)}
 .big .glyph{font-size:5rem}
+.project:hover .glyph{transform:translateY(-3px)}
 .ln{height:9px;border-radius:5px;background:var(--c);opacity:.4;margin-top:12px}
 .ln.l1{width:58%;margin-top:18px}.ln.l2{width:38%}
-.pilly{position:absolute;right:22px;bottom:22px;background:var(--c);color:var(--a);font-weight:800;font-size:var(--fs-2xs);padding:8px 16px;border-radius:999px;pointer-events:none}
+.pilly{position:absolute;right:22px;bottom:22px;background:var(--c);color:var(--a);font:700 .66rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;border-radius:999px;pointer-events:none;transition:transform .4s var(--ease)}
+.project:hover .pilly{transform:translateY(-4px)}
 .more-row{display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin-top:38px}
-.more-row .btn b{display:grid;place-items:center;min-width:26px;height:26px;padding:0 7px;border-radius:999px;background:var(--yellow);color:var(--ink);font-size:.8rem}
-.note{text-align:center;margin-top:22px;font-size:.92rem;color:var(--muted)}
+.more-row .btn b{display:grid;place-items:center;min-width:26px;height:24px;padding:0 8px;border-radius:999px;background:rgba(10,11,18,.88);color:#fff;font:600 .72rem/1 var(--mono)}
+.note{text-align:center;margin-top:22px;font-size:.86rem;color:var(--muted);max-width:74ch;margin-inline:auto}
 
-/* modal */
+/* ---------- 10. modal ---------- */
 .modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px}
 .modal[hidden]{display:none}
-.scrim{position:absolute;inset:0;background:rgba(15,27,61,.62);backdrop-filter:blur(3px);animation:fade .2s}
-.sheet{position:relative;width:min(720px,100%);max-height:min(86vh,760px);overflow:auto;background:var(--paper);border:2px solid var(--ink);border-radius:var(--r-lg);box-shadow:10px 10px 0 var(--ink);padding:30px;animation:pop .28s cubic-bezier(.2,.9,.3,1.2)}
+.scrim{position:absolute;inset:0;background:rgba(3,4,8,.78);animation:fade .2s}
+@media (hover:hover) and (pointer:fine){.scrim{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}}
+.sheet{position:relative;width:min(720px,100%);max-height:min(86vh,760px);overflow:auto;overscroll-behavior:contain;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015)),var(--surface);border:1px solid var(--line-2);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(124,140,255,.12),0 50px 140px -30px #000,0 30px 90px -40px rgba(124,140,255,.5);padding:30px;animation:pop .32s var(--ease)}
 @keyframes fade{from{opacity:0}}
 @keyframes pop{from{opacity:0;transform:translateY(18px) scale(.96)}}
 .sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
-.sheet h2{font-size:1.8rem}
-.x,.dot{border-radius:50%;border:2px solid var(--ink);background:#fff;cursor:pointer}
-.x{flex:none;width:40px;height:40px;font-size:1.3rem;line-height:1}
-.x:hover{background:var(--yellow)}
+.sheet h2{font-size:var(--fs-xl)}
+.x,.dot{border-radius:50%;border:1px solid var(--line-2);background:rgba(255,255,255,.05);color:var(--text);cursor:pointer}
+.x{flex:none;display:grid;place-items:center;width:40px;height:40px;font-size:1.3rem;line-height:1;transition:transform .3s var(--ease),background-color .2s ease,border-color .2s ease}
+.x:hover{background:var(--accent-soft);border-color:rgba(124,140,255,.6);transform:rotate(90deg)}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 10px}
-.chip{padding:7px 15px;border-radius:999px;border:2px solid var(--ink);background:#fff;font-weight:700;font-size:var(--fs-xs);cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--ink);color:var(--yellow)}
+.chip{padding:8px 14px;border-radius:999px;border:1px solid var(--line-2);background:rgba(255,255,255,.03);font:500 .7rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--text-2);cursor:pointer;transition:background-color .2s ease,border-color .2s ease,color .2s ease}
+.chip:hover{border-color:rgba(124,140,255,.55);color:var(--text)}
+.chip[aria-pressed="true"]{background:var(--grad);border-color:transparent;color:var(--accent-ink);font-weight:700}
 .plist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 22px;margin-top:14px;align-items:start}
 .pcol{min-width:0}
 .pcol.wide{grid-column:1/-1}
 .pcol.wide .pcol-list{grid-template-columns:repeat(2,minmax(0,1fr))}
-.pcol-h{display:flex;align-items:center;gap:8px;font-size:.92rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.02em;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--line)}
-.pcol-n{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--paper-2);color:var(--ink-2);font-size:.72rem;font-weight:800}
-.pcol-list{display:grid;gap:12px}
-.pitem{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:12px;align-items:center;min-width:0;padding:12px;border:2px solid var(--line);border-radius:var(--r-md);background:#fff;text-decoration:none;transition:border-color .15s,transform .15s}
-.pitem:hover{border-color:var(--ink);transform:translateY(-2px)}
-.pmark{width:54px;height:54px;border-radius:var(--r-md);display:grid;place-items:center;background:linear-gradient(135deg,var(--a),var(--b));color:var(--c);font-family:var(--display);font-weight:800;font-size:1.2rem}
+.pcol-h{display:flex;align-items:center;gap:8px;font:500 .7rem/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+.pcol-n{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--accent-soft);color:#c6cdff;font:600 .66rem/1 var(--mono);letter-spacing:0}
+.pcol-list{display:grid;gap:10px}
+.pitem{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:12px;align-items:center;min-width:0;padding:11px 12px;border:1px solid var(--line);border-radius:var(--r-md);background:rgba(255,255,255,.025);text-decoration:none;color:var(--text);transition:border-color .2s ease,background-color .2s ease,translate .25s var(--ease),box-shadow .3s ease}
+.pitem:hover{border-color:rgba(124,140,255,.5);background:rgba(124,140,255,.07);translate:0 -2px;box-shadow:0 14px 34px -20px rgba(124,140,255,.7)}
+.pmark{--a:#1b2233;--b:#2c3656;--c:#eaeef7;width:54px;height:54px;border-radius:var(--r-md);display:grid;place-items:center;flex:none;background:linear-gradient(135deg,var(--a),var(--b));color:var(--c);font-family:var(--display);font-weight:700;font-size:1.2rem;letter-spacing:-.03em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 10px 24px -14px rgba(0,0,0,.9)}
 .pitem .pmark{width:46px;height:46px;font-size:1.05rem}
-.pitem b{display:block;font-family:var(--display);font-size:1.02rem;line-height:1.25;margin-bottom:2px}
-.pitem small{display:block;color:var(--muted);font-size:.84rem;line-height:1.35;overflow-wrap:anywhere}
-.pitem .go{font-weight:700;font-size:.9rem;white-space:nowrap;color:var(--teal-d)}
-.sheet h3.sub{margin-top:28px;font-size:1.05rem}
+.pitem b{display:block;font-family:var(--display);font-weight:600;font-size:1rem;line-height:1.25;margin-bottom:2px}
+.pitem small{display:block;color:var(--muted);font-size:.8rem;line-height:1.35;overflow-wrap:anywhere}
+.pitem .go{font:600 .7rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;color:var(--accent)}
+.sheet h3.sub{margin-top:28px;font:500 .72rem/1.3 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .linkrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
 
-/* process */
-#process{background:var(--ink);color:#fff}
-#process .lead{color:var(--muted-inverse)}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:52px;position:relative}
-.steps::before{content:"";position:absolute;left:0;right:0;top:22px;height:3px;background:rgba(255,255,255,.18)}
-.steps::after{content:"";position:absolute;left:0;top:22px;height:3px;width:0;background:var(--teal);transition:width 1.6s cubic-bezier(.3,.7,.2,1)}
-.steps.go::after{width:100%}
-.step{position:relative;z-index:1;padding-top:58px}
-.step .day{position:absolute;z-index:2;top:0;left:0;background:var(--yellow);color:var(--ink);font-family:var(--display);font-weight:800;padding:8px 16px;border-radius:999px;font-size:.95rem;border:2px solid var(--ink)}
-.step h3{color:#fff}
-.step p{color:var(--muted-inverse);margin-top:8px;font-size:.98rem}
+/* ---------- 11. process timeline ----------
+   .steps gets class "go" when it scrolls into view (index.html and fx.js both add it): the line fills, the nodes light up. */
+.steps{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:52px;padding-top:48px;counter-reset:step}
+.steps::before{content:"";position:absolute;left:0;right:0;top:15px;height:1px;background:var(--line-2)}
+.steps::after{content:"";position:absolute;left:0;right:0;top:14px;height:3px;border-radius:3px;background:var(--grad);box-shadow:0 0 18px rgba(124,140,255,.85);transform:scaleX(0);transform-origin:0 50%;transition:transform 1.8s cubic-bezier(.3,.7,.2,1)}
+.steps.go::after{transform:scaleX(1)}
+.step{z-index:1;padding:24px 24px 26px;counter-increment:step}
+/* numbered node sitting on the line */
+.step::before{content:counter(step,decimal-leading-zero);position:absolute;z-index:2;left:22px;top:-49px;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--bg-2);border:1px solid var(--line-2);font:600 .66rem/1 var(--mono);color:var(--muted);transition:border-color .5s ease,color .5s ease,box-shadow .5s ease}
+.steps.go .step::before{border-color:rgba(124,140,255,.85);color:var(--text);box-shadow:0 0 0 4px rgba(124,140,255,.14),0 0 24px rgba(124,140,255,.6)}
+.steps.go .step:nth-child(1)::before{transition-delay:.1s}
+.steps.go .step:nth-child(2)::before{transition-delay:.7s}
+.steps.go .step:nth-child(3)::before{transition-delay:1.3s}
+.steps.go .step:nth-child(n+4)::before{transition-delay:1.6s}
+.step .day{display:inline-flex;align-items:center;margin-bottom:14px;padding:5px 10px;border-radius:999px;border:1px solid rgba(124,140,255,.36);background:var(--accent-soft);color:#c6cdff;font:600 .68rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.step h3{color:var(--text)}
+.step p{color:var(--text-2);margin-top:8px;font-size:.96rem}
 
-/* pricing */
-.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:44px;align-items:start}
-.tier{background:var(--paper-2);border:2px solid var(--ink);border-radius:var(--r-lg);padding:28px;box-shadow:4px 4px 0 var(--ink);display:flex;flex-direction:column;gap:6px;transition:transform .2s}
-.tier:hover{transform:translateY(-4px)}
-.tier.mid{background:var(--yellow);box-shadow:6px 6px 0 var(--ink)}
-.tier .name{font-weight:700;font-size:.95rem;color:var(--muted)}
-.tier.mid .name{color:var(--ink-2)}
-.price{font-family:var(--display);font-weight:800;font-size:2.1rem;letter-spacing:-.03em;margin:4px 0 12px}
-.tier ul{list-style:none;display:grid;gap:9px;margin-bottom:22px}
-.tier li{display:flex;gap:10px;font-size:.96rem}
-.tier li::before{content:"";flex:none;width:18px;height:18px;margin-top:3px;border-radius:50%;background:var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.5l3 3 6-7' fill='none' stroke='%230f1b3d' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+/* ---------- 12. pricing ---------- */
+.tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:44px;align-items:stretch}
+/* each tier is a size container so the price can shrink to fit a narrow card instead of wrapping */
+.tier{padding:28px;display:flex;flex-direction:column;gap:6px;container-type:inline-size}
+.tier.mid{background:linear-gradient(180deg,rgba(124,140,255,.14),rgba(124,140,255,.02) 58%),var(--surface)}
+.tier .name{font:500 .72rem/1.3 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.tier.mid .name{color:#c6cdff}
+.price{font-family:var(--display);font-weight:700;font-size:var(--fs-2xl);font-size:clamp(1.4rem,12.5cqi,2.1rem);letter-spacing:-.035em;line-height:1.15;margin:6px 0 14px;color:var(--text)}
+.tier ul{list-style:none;display:grid;gap:10px;margin-bottom:24px;padding-top:16px;border-top:1px solid var(--line)}
+.tier li{display:flex;gap:10px;font-size:.95rem;color:var(--text-2)}
+.tier li::before{content:"";flex:none;width:18px;height:18px;margin-top:3px;border-radius:50%;background:var(--accent-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.5l3 3 6-7' fill='none' stroke='%23c6cdff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;box-shadow:inset 0 0 0 1px rgba(124,140,255,.3)}
 .tier .btn{margin-top:auto}
+@media (hover:hover){.tier.mid:hover{box-shadow:var(--shadow),var(--glow),0 34px 90px -44px rgba(124,140,255,.9)}}
 
-/* reviews */
-#reviews{background:var(--paper-2);border-block:1px solid var(--line)}
-.rev-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;margin-top:44px;align-items:stretch}
-.rev-stage{position:relative;background:var(--card);border:2px solid var(--ink);border-radius:var(--r-lg);padding:32px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;min-height:320px}
-.rev-stage .qmark{font-family:var(--display);font-size:5rem;line-height:.6;color:var(--yellow-d);height:36px}
-.stars{display:inline-flex;gap:3px;color:var(--yellow-d)}
+/* ---------- 13. reviews ---------- */
+.rev-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;margin-top:44px;align-items:stretch}
+.rev-stage{padding:32px;display:flex;flex-direction:column;justify-content:center;min-height:320px}
+.rev-stage .qmark{font-family:var(--display);font-size:5rem;line-height:.6;height:36px;color:var(--accent)}
+.stars{display:inline-flex;gap:3px;color:var(--star)}
 .stars svg{width:20px;height:20px}
-.stars .off{color:var(--line)}
-.rev-text{font-family:var(--display);font-weight:600;font-size:1.35rem;line-height:1.35;margin:14px 0 18px;letter-spacing:-.01em}
-.rev-who{font-weight:700}.rev-who small{display:block;font-weight:500;color:var(--muted)}
-.rev-nav{display:flex;align-items:center;gap:10px;margin-top:24px}
-.dot{width:11px;height:11px;padding:0}
-.dot[aria-current="true"]{background:var(--ink);width:26px;border-radius:8px}
+.stars .off{color:rgba(255,255,255,.38)}
+.rev-text{font-family:var(--display);font-weight:500;font-size:var(--fs-lg);line-height:1.38;margin:14px 0 18px;letter-spacing:-.015em;color:var(--text)}
+.rev-who{font-weight:600}.rev-who small{display:block;font-weight:400;color:var(--muted)}
+.rev-nav{display:flex;align-items:center;gap:18px;margin-top:24px}
+.dot{position:relative;width:9px;height:9px;padding:0;border:0;background:rgba(255,255,255,.38)}
+.dot::before{content:"";position:absolute;inset:-9px}
+.dot[aria-current="true"]{background:var(--grad);width:26px;border-radius:8px;box-shadow:0 0 12px rgba(124,140,255,.8)}
 .rev-empty{text-align:left}
 .rev-empty h3{font-size:1.5rem;max-width:20ch}
-.rev-empty p{color:var(--muted);margin-top:10px;max-width:42ch}
-.form-card{background:var(--card);border:2px solid var(--ink);border-radius:var(--r-lg);padding:28px;box-shadow:var(--shadow)}
+.rev-empty p{color:var(--text-2);margin-top:10px;max-width:42ch}
+.form-card{padding:28px}
+.form-card:focus-within{border-color:rgba(124,140,255,.4)}
 .form-card h3{margin-bottom:4px}
-.form-card>p{color:var(--muted);font-size:.95rem;margin-bottom:16px}
+.form-card>p,.form-card form>p{color:var(--muted);font-size:.93rem;margin-bottom:16px}
 .starpick{display:flex;gap:4px;margin:6px 0 4px}
-.starpick button{background:none;border:0;cursor:pointer;color:var(--line);padding:2px;transition:transform .12s,color .12s}
+.starpick button{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.38);padding:2px;border-radius:8px;transition:transform .15s var(--ease),color .15s ease}
 .starpick button svg{width:32px;height:32px}
-.starpick button.on{color:var(--yellow-d)}
+.starpick button.on{color:var(--star)}
 .starpick button:hover{transform:scale(1.15)}
+.rev-skel{display:grid;gap:14px;padding:8px 0}
+.rev-skel i,.rev-skel b{display:block;height:14px;border-radius:8px;background:var(--surface-3);animation:skel 1.1s ease-in-out infinite alternate}
+.rev-skel b{height:18px}
+.rev-skel :nth-child(2n){animation-delay:.25s}
+@keyframes skel{from{opacity:.35}to{opacity:.9}}
 
-/* forms */
+/* ---------- 14. forms ---------- */
 .field{display:grid;gap:6px;margin-bottom:14px}
-.field label{font-weight:700;font-size:.92rem}
-.field label span{font-weight:500;color:var(--muted)}
-.field input,.field select,.field textarea{width:100%;padding:12px 14px;border-radius:var(--r-sm);border:2px solid var(--line);background:#fff;transition:border-color .15s,box-shadow .15s}
+.field label{font-weight:600;font-size:.86rem;color:var(--text-2)}
+.field label span{font-weight:400;color:var(--muted)}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border-radius:var(--r-sm);border:1px solid rgba(255,255,255,.36);background-color:rgba(0,0,0,.32);color:var(--text);box-shadow:inset 0 1px 2px rgba(0,0,0,.5);transition:border-color .2s ease,box-shadow .2s ease,background-color .2s ease}
+.field ::placeholder{color:var(--muted);opacity:1}
 .field textarea{min-height:104px;resize:vertical}
-.field input,.field select{height:52px}
-.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--ink);box-shadow:3px 3px 0 var(--teal)}
-.field.bad input,.field.bad textarea{border-color:var(--red)}
+.field input,.field select{height:48px}
+.field select{-webkit-appearance:none;appearance:none;padding-right:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 7.5l5 5 5-5' fill='none' stroke='%238792a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;background-size:16px}
+.field select option{background:var(--surface);color:var(--text)}
+.field input:hover,.field select:hover,.field textarea:hover{border-color:rgba(255,255,255,.55)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);background-color:rgba(124,140,255,.06);box-shadow:0 0 0 3px rgba(124,140,255,.28),inset 0 1px 2px rgba(0,0,0,.5)}
+.field input:focus-visible,.field select:focus-visible,.field textarea:focus-visible{outline:2px solid #aab5ff;outline-offset:2px}   /* keyboard focus stays obvious, also on an invalid field */
+.field input:-webkit-autofill{-webkit-text-fill-color:var(--text);caret-color:var(--text);box-shadow:0 0 0 1000px #0c0f16 inset}
+.field.bad input,.field.bad textarea{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,93,108,.18)}
 .field[hidden]{display:none}
-.err{color:var(--red);font-size:.86rem;font-weight:600;min-height:0}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field.pop{animation:pop .3s var(--ease)}
+.err{color:var(--red);font-size:.84rem;font-weight:500;min-height:0}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
 .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
 .done{display:none;text-align:center;padding:22px 6px}
-.done.show{display:block;animation:pop .35s}
-.done .tick{width:60px;height:60px;border-radius:50%;background:var(--green);border:2px solid var(--ink);display:grid;place-items:center;margin:0 auto 14px;color:#fff}
+.done.show{display:block;animation:pop .35s var(--ease)}
+.done .tick{width:60px;height:60px;border-radius:50%;background:linear-gradient(145deg,var(--green),var(--green-d));display:grid;place-items:center;margin:0 auto 14px;color:#fff;box-shadow:0 0 0 6px rgba(37,211,102,.12),0 14px 40px -12px rgba(37,211,102,.7)}
 .done .tick svg{width:30px;height:30px}
-.done p{color:var(--muted);margin:8px auto 16px;max-width:36ch}
+.done p{color:var(--text-2);margin:8px auto 16px;max-width:36ch}
 
 .hp{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
 
-/* enquire */
-#enquire{background:var(--ink);color:#fff}
-#enquire .lead{color:var(--muted-inverse)}
-.enq{display:grid;grid-template-columns:.85fr 1.15fr;gap:52px;align-items:start}
-.ways{display:grid;gap:12px;margin-top:30px}
-.way{display:flex;align-items:center;gap:14px;padding:14px 16px;border:2px solid rgba(255,255,255,.22);border-radius:var(--r-md);text-decoration:none;transition:border-color .15s,background .15s}
-.way:hover{border-color:var(--teal);background:rgba(255,255,255,.05)}
-.way i{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:var(--r-sm);background:var(--teal);color:var(--ink)}
-.way i svg{width:20px;height:20px}
-.way b{display:block;font-size:.98rem}.way small{color:var(--muted-inverse);font-size:var(--fs-xs)}
-#enquire .form-card{color:var(--ink);box-shadow:8px 8px 0 var(--teal)}
+/* ---------- 15. enquire + profile handles ---------- */
+.enq{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:52px;align-items:start}
+#enquire .form-card{border-color:rgba(124,140,255,.24);box-shadow:var(--shadow),0 44px 120px -56px rgba(124,140,255,.8)}
+/* .handles  profile-handle list (also styles the older .ways/.way markup the same way)
+   <ul class="handles">
+     <li><a class="handle" href="https://instagram.com/yatharthwebs" target="_blank" rel="noopener">
+       <span class="h-ico"><svg .../></span>
+       <span class="h-txt"><b>@yatharthwebs</b><small>Instagram</small></span>
+       <span class="h-go" aria-hidden="true">↗</span></a></li>
+   </ul>
+   .handles.cols = auto-fit grid · .handles.mini = compact icon-only row (keep .h-txt: it is the accessible name) */
+.handles{list-style:none;display:grid;gap:10px;margin:0;padding:0}
+.handles.cols{grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))}
+.ways{display:grid;gap:10px;margin-top:30px}
+.enq .handles{margin-top:30px}
+.handle,.way{position:relative;display:flex;align-items:center;gap:14px;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012));color:var(--text);text-decoration:none;transition:border-color .25s ease,background-color .25s ease,box-shadow .3s ease,translate .3s var(--ease)}
+.h-ico,.way i{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:12px;font-style:normal;background:var(--accent-soft);box-shadow:inset 0 0 0 1px rgba(124,140,255,.3);color:#c6cdff;transition:background-color .25s ease,color .25s ease,box-shadow .25s ease}
+.h-ico svg,.way i svg{width:20px;height:20px}
+.h-txt,.way>span{display:grid;min-width:0;line-height:1.3}
+.h-txt b,.way b{display:block;font-size:.96rem;font-weight:600;overflow-wrap:anywhere;color:var(--text)}
+.h-txt small,.way small{display:block;margin-top:3px;font:500 .66rem/1.35 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.h-go{flex:none;margin-left:auto;font:500 1rem/1 var(--mono);color:var(--muted);transition:transform .25s var(--ease),color .25s ease}
+.h-go svg{width:16px;height:16px}
+.handle:hover,.way:hover{border-color:rgba(124,140,255,.55);background-color:rgba(124,140,255,.06);box-shadow:var(--glow);translate:0 -2px}
+.handle:hover .h-ico,.way:hover i{background:var(--accent);color:var(--accent-ink);box-shadow:0 0 22px rgba(124,140,255,.7)}
+.handle:hover .h-go{transform:translate(3px,-3px);color:var(--text)}
+/* WhatsApp is the only handle that is green */
+.handle[href*="wa.me"] .h-ico,.way[href*="wa.me"] i{background:rgba(37,211,102,.13);box-shadow:inset 0 0 0 1px rgba(37,211,102,.38);color:var(--green)}
+.handle[href*="wa.me"]:hover,.way[href*="wa.me"]:hover{border-color:rgba(37,211,102,.55);background-color:rgba(37,211,102,.06);box-shadow:0 0 0 1px rgba(37,211,102,.4),0 18px 50px -18px rgba(37,211,102,.55)}
+.handle[href*="wa.me"]:hover .h-ico,.way[href*="wa.me"]:hover i{background:var(--green);color:#03170a;box-shadow:0 0 22px rgba(37,211,102,.7)}
+.handles.mini{display:flex;flex-wrap:wrap;gap:8px}
+.handles.mini .handle{padding:0;gap:0;width:42px;height:42px;justify-content:center;border-radius:12px}
+.handles.mini .h-ico{width:100%;height:100%;background:none;box-shadow:none;color:var(--text-2)}
+.handles.mini .handle:hover .h-ico{background:none;box-shadow:none;color:#fff}
+.handles.mini .handle[href*="wa.me"] .h-ico{color:var(--green)}
+.handles.mini .h-txt{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.handles.mini .h-go{display:none}
 
-footer{background:var(--paper);padding:34px 0;border-top:2px solid var(--ink)}
-footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:center;font-size:.92rem;color:var(--muted)}
-footer nav{display:flex;gap:20px;font-weight:600}
-footer nav a{text-decoration:none;color:var(--ink-2)}footer nav a:hover{text-decoration:underline}
+/* ---------- 16. footer + floating WhatsApp button ---------- */
+footer{position:relative;margin-top:-1px;padding:34px 0;border-top:1px solid var(--line);background:rgba(255,255,255,.012)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px 24px;align-items:center;font:500 .74rem/1.5 var(--mono);letter-spacing:.04em;color:var(--muted)}
+footer nav{display:flex;flex-wrap:wrap;gap:0 8px;margin-inline:-6px}
+footer nav a{display:inline-flex;align-items:center;min-height:40px;padding:0 6px;text-decoration:none;color:var(--text-2);transition:color .2s ease}   /* 40px tap targets: this is the only site nav on phones */
+footer nav a:hover{color:#fff}
 
-.fab{position:fixed;right:20px;bottom:20px;z-index:40;width:58px;height:58px;border-radius:50%;background:var(--green);border:2px solid var(--ink);color:#fff;display:grid;place-items:center;box-shadow:3px 3px 0 var(--ink);transition:transform .2s,opacity .25s}
-.fab.hide{opacity:0;pointer-events:none;transform:scale(.7)}
+.fab{position:fixed;right:20px;bottom:20px;z-index:40;width:56px;height:56px;border-radius:50%;background:linear-gradient(145deg,var(--green),var(--green-d));color:#fff;display:grid;place-items:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 16px 36px -10px rgba(37,211,102,.7);transition:transform .25s var(--ease),opacity .25s ease}
+.fab:hover{transform:translateY(-3px) scale(1.05)}
+.fab.hide{opacity:0;pointer-events:none;transform:scale(.7);visibility:hidden;transition:transform .25s var(--ease),opacity .25s ease,visibility 0s .25s}
 .fab svg{width:28px;height:28px}
-.fab::before{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--green);animation:ping 2.6s ease-out infinite}
-@keyframes ping{from{transform:scale(1);opacity:.8}to{transform:scale(1.7);opacity:0}}
+.fab::before{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid var(--green);animation:ping 2.8s ease-out infinite;pointer-events:none}
+@keyframes ping{from{transform:scale(1);opacity:.75}to{transform:scale(1.8);opacity:0}}
 
-.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s}
+/* ---------- 17. motion hooks driven by assets/fx.js ---------- */
+/* .reveal  hidden until fx.js (or the page's own observer) adds .in.
+   data-reveal="up|left|right|flip|zoom" picks the entrance, data-delay="ms" delays it,
+   data-stagger="ms" on a parent sets the cascade step for its .reveal children (default 70). */
+.reveal{--rv:translate3d(0,22px,0);opacity:0;transform:var(--rv);transition:opacity .7s var(--ease),transform .8s var(--ease),translate .35s var(--ease),border-color .3s ease,box-shadow .35s ease,background-color .3s ease}
+.reveal[data-reveal="left"]{--rv:translate3d(-30px,0,0)}
+.reveal[data-reveal="right"]{--rv:translate3d(30px,0,0)}
+.reveal[data-reveal="zoom"]{--rv:scale(.93)}
+.reveal[data-reveal="flip"]{--rv:perspective(900px) rotateX(16deg) translate3d(0,26px,0);transform-origin:50% 100%}
+/* touch devices get no pointer tilt, so cards rise in with a slight rotateX instead */
+@media (hover:none),(pointer:coarse){
+  .reveal[data-tilt]:not([data-reveal]),.project.reveal:not([data-reveal]),.tier.reveal:not([data-reveal]),.panel.reveal:not([data-reveal]),.glass.reveal:not([data-reveal]){--rv:perspective(900px) rotateX(12deg) translate3d(0,26px,0);transform-origin:50% 100%}
+}
 .reveal.in{opacity:1;transform:none}
+/* fx.js adds .is-revealing for the length of the entrance so no other transition list can swallow it */
+.reveal.in.is-revealing{transition:opacity .7s var(--ease) var(--rv-delay,0ms),transform .8s var(--ease) var(--rv-delay,0ms)}
 
+/* [data-tilt="deg"]  pointer 3D tilt (fine pointers only). fx.js sets --rx/--ry (deg), --mx/--my (%), --nx/--ny (-1..1)
+   and toggles .is-tilting (then .is-settling while it eases back). ::after is the glare.
+   Children with data-depth="px" lift towards the viewer while tilting (fx.js copies the value into --z). */
+:where([data-tilt]){position:relative}
+[data-tilt]{--rx:0deg;--ry:0deg;--mx:50%;--my:50%;--nx:0;--ny:0;transform-style:preserve-3d}
+@media (hover:hover) and (pointer:fine){
+  [data-tilt].is-tilting,[data-tilt].is-settling{transform:perspective(var(--tilt-persp,1000px)) rotateX(var(--rx)) rotateY(var(--ry))!important}
+  [data-tilt].is-tilting{z-index:2;will-change:transform;transition:transform .16s ease-out,translate .35s var(--ease),border-color .3s ease,box-shadow .35s ease,background-color .3s ease}
+  [data-tilt].is-settling{transition:transform .65s var(--ease),translate .35s var(--ease),border-color .3s ease,box-shadow .35s ease,background-color .3s ease}
+  [data-tilt]::after{content:"";position:absolute;inset:0;z-index:3;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .35s ease;background:radial-gradient(520px circle at var(--mx) var(--my),rgba(255,255,255,.11),rgba(124,140,255,.06) 34%,transparent 62%)}
+  [data-tilt].is-tilting::after{opacity:1}
+  [data-tilt] [data-depth]{transition:transform .45s var(--ease)}
+  [data-tilt].is-tilting [data-depth]{transform:translateZ(var(--z,24px))}
+  /* a tilted card is a real 3D space: a child with its own 3D rotation would cut through the card.
+     index.html used to rotate .thumb from an inline script; on a [data-tilt] card that is switched off. */
+  .project[data-tilt] .thumb{transform:none!important}
+  .project[data-tilt].is-tilting .thumb[data-depth]{transform:translateZ(var(--z,24px))!important}
+}
+
+/* [data-spot]  cursor spotlight behind the element's content. fx.js sets --mx/--my (px) and toggles .is-spot.
+   Tune with --spot-size / --spot-color. Ignored on [data-tilt] elements (their glare does the job). */
+:where([data-spot]:not([data-tilt])){position:relative;isolation:isolate}
+[data-spot]:not([data-tilt]){--mx:50%;--my:0px}
+[data-spot]:not([data-tilt])::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .5s ease;background:radial-gradient(var(--spot-size,460px) circle at var(--mx) var(--my),var(--spot-color,rgba(124,140,255,.14)),transparent 70%)}
+[data-spot].is-spot:not([data-tilt])::after{opacity:1}
+
+/* [data-magnetic]  pulled a few px towards the pointer. fx.js sets --tx/--ty (px) and toggles .is-magnetic. */
+:where([data-magnetic]){transition:translate .45s var(--ease)}
+[data-magnetic]{translate:var(--tx,0px) var(--ty,0px)}
+[data-magnetic].is-magnetic{transition:translate .14s ease-out,transform .2s var(--ease),box-shadow .3s ease,background-color .3s ease,border-color .3s ease,color .3s ease}
+
+/* [data-parallax="0.15"]  slow vertical drift on scroll. fx.js sets --plx (px). */
+[data-parallax]{translate:0 var(--plx,0px);will-change:translate}
+
+/* ---------- 18. responsive ---------- */
 @media (max-width:900px){
   section{padding:72px 0}
-  .hero .wrap,.diff-grid,.work-grid,.rev-grid,.enq{grid-template-columns:1fr}
+  .diff-grid,.work-grid,.rev-grid,.enq,.tiers{grid-template-columns:minmax(0,1fr)}
+  .enq{gap:36px}
   .project.big{grid-row:auto}
-  .steps,.tiers{grid-template-columns:1fr}
-  .steps::before,.steps::after{display:none}
   .links{display:none}
-  .serp{transform:none;margin-top:8px}
-  .two{grid-template-columns:1fr}
+  .two{grid-template-columns:minmax(0,1fr)}
+  /* the timeline turns vertical: line down the left, nodes beside each card */
+  .steps{grid-template-columns:minmax(0,1fr);gap:16px;padding-top:0;padding-left:48px}
+  .steps::before{left:15px;right:auto;top:0;bottom:0;width:1px;height:auto}
+  .steps::after{left:14px;right:auto;top:0;bottom:0;width:3px;height:auto;transform:scaleY(0);transform-origin:50% 0}
+  .steps.go::after{transform:scaleY(1)}
+  .step::before{left:-49px;top:22px}
 }
 @media (max-width:600px){
   html{scroll-padding-top:66px}
+  section{padding:60px 0}
   .nav .wrap{height:58px;gap:10px}
   .brand img{height:24px}
-  .nav .btn.sm{padding:8px 14px;font-size:.85rem;white-space:nowrap;box-shadow:2px 2px 0 var(--ink);gap:7px}
+  .nav .btn.sm{padding:8px 13px;font-size:.82rem;white-space:nowrap;gap:7px}
   .nav .btn.sm svg{width:16px;height:16px}
   .hide-sm{display:none}
-}
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-  .reveal{opacity:1;transform:none}
-  .res{opacity:1;transform:none}
-}
-
-@media (max-width:600px){
+  .modal{padding:12px}
+  .sheet{padding:22px 18px}
+  .panel,.tier,.form-card,.rev-stage,.glass{padding:22px}
+  .rev-stage{min-height:260px}
+  .page-hero{padding:48px 0 16px}
   .plist,.pcol.wide .pcol-list{grid-template-columns:minmax(0,1fr)}
+  .fab{right:16px;bottom:16px}
 }
 
-.rev-skel{display:grid;gap:14px;padding:8px 0}
-.rev-skel i,.rev-skel b{display:block;height:14px;border-radius:8px;background:linear-gradient(90deg,var(--paper-2) 25%,#e6e6dc 50%,var(--paper-2) 75%);background-size:200% 100%;animation:skel 1.2s linear infinite}
-.rev-skel b{height:18px}
-@keyframes skel{to{background-position:-200% 0}}
-@media (prefers-reduced-motion:reduce){.rev-skel i,.rev-skel b{animation:none}}
+/* ---------- reduced motion: nothing moves, everything is visible ---------- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .reveal{opacity:1!important;transform:none!important}
+  [data-tilt],[data-tilt].is-tilting,[data-tilt].is-settling,[data-tilt] [data-depth]{transform:none!important}
+  [data-tilt]::after,.fx-canvas,.fx-cursor,.live-dot::after,.fab::before{display:none!important}
+  [data-magnetic],[data-parallax],.float{translate:none!important}
+  .steps::after{transform:none!important}
+  .btn.y::after,.btn.ink::after,.scr::after{display:none}
+}
