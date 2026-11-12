@@ -9,30 +9,110 @@
 <meta property="og:description" content="Who builds your site, how the five-day process works, and what it costs.">
 <meta property="og:type" content="website">
 <link rel="canonical" href="https://yatharthwebs.site/about.html">
-<meta name="theme-color" content="#0f1b3d">
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" href="/favicon.png" sizes="96x96">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#07080c">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png?v=2" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=JetBrains+Mono:wght@400..700&family=Space+Grotesk:wght@400..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <meta name="google-site-verification" content="PASTE_GSC_TOKEN_HERE">  <!-- Search Console: replace token, or delete this line if you verify via DNS -->
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much does a website for a local shop cost?", "acceptedAnswer": {"@type": "Answer", "text": "Yatharth Webs sites start at ₹1,500–2,000 for a one-page site, ₹3,500–4,500 for a multi-page site, and ₹5,500–6,500 for a multi-page site with basic SEO and WhatsApp/Instagram integration."}}, {"@type": "Question", "name": "How long does it take to build a shop website?", "acceptedAnswer": {"@type": "Answer", "text": "Most sites go live in about five days: a WhatsApp chat on day one, a live preview on day three, and launch on day five."}}, {"@type": "Question", "name": "Do you build websites for shops outside Delhi?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The work is done remotely over WhatsApp, and clients so far include shops in Delhi and Hyderabad."}}, {"@type": "Question", "name": "Who is Yatharth Webs?", "acceptedAnswer": {"@type": "Answer", "text": "Yatharth Webs is the freelance web design studio of Yatharth Jorwal, building simple, fast websites for local businesses in Delhi NCR and beyond."}}]}</script>
 <script src="assets/pixel.js"></script>
+<script src="assets/fx.js" defer></script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1102043718863613&ev=PageView&noscript=1" alt=""></noscript>
 <style>
-.ab-hero{padding:56px 0 8px}
-.ab-hero h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;letter-spacing:-.03em;max-width:20ch}
-.ab-body{padding:40px 0}
-.ab-body .wrap{max-width:760px}
-.ab-body p{color:var(--ink-2);margin-top:16px;font-size:1.05rem;line-height:1.7}
-.ab-body h2{margin-top:44px;font-size:1.6rem}
-.who-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:20px}
-.who-card{border:2px solid var(--line);border-radius:var(--r-md);padding:16px;background:var(--card)}
-.who-card b{display:block;font-family:var(--display);font-size:1.02rem;margin-bottom:4px}
-.who-card span{color:var(--muted);font-size:.92rem}
+/* about.html · page-only styles (Graphite theme).
+   Everything shared lives in assets/styles.css: tokens, .glass, .tier, .steps, .handles, .specs, .kicker and the fx.js motion hooks. */
+
+/* ---- hero ---- */
+.ab-hero{isolation:isolate;padding-bottom:84px}
+.ab-deco{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.ab-glow{position:absolute;right:-8%;top:-22%;width:min(760px,80vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side,rgba(124,140,255,.17),rgba(181,123,255,.06) 56%,transparent)}
+.ab-hero-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:64px;align-items:center}
+.ab-hero .lead{max-width:54ch}
+
+/* spec sheet: a tilting glass card that floats inside four fixed corner ticks */
+.ab-stage{position:relative;justify-self:end;width:min(100%,430px)}
+.ab-frame{--tick:rgba(255,255,255,.34);position:absolute;inset:-14px;pointer-events:none;animation:ab-breathe 4.5s ease-in-out infinite alternate;background:
+  linear-gradient(var(--tick),var(--tick)) 0 0/18px 1px no-repeat,linear-gradient(var(--tick),var(--tick)) 0 0/1px 18px no-repeat,
+  linear-gradient(var(--tick),var(--tick)) 100% 0/18px 1px no-repeat,linear-gradient(var(--tick),var(--tick)) 100% 0/1px 18px no-repeat,
+  linear-gradient(var(--tick),var(--tick)) 0 100%/18px 1px no-repeat,linear-gradient(var(--tick),var(--tick)) 0 100%/1px 18px no-repeat,
+  linear-gradient(var(--tick),var(--tick)) 100% 100%/18px 1px no-repeat,linear-gradient(var(--tick),var(--tick)) 100% 100%/1px 18px no-repeat}
+@keyframes ab-breathe{from{opacity:.45}to{opacity:1}}
+.ab-spec{padding:20px 24px 10px}
+.ab-spec:hover{animation-play-state:paused}
+.ab-spec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;font:500 .7rem/1.3 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--text-2)}
+.ab-spec-head span{display:inline-flex;align-items:center;gap:9px}
+.ab-spec .specs>div{padding:13px 0}
+.ab-spec .specs>div:last-child{border-bottom:0}
+.ab-spec .specs dd{font-family:var(--display);font-size:1.06rem;letter-spacing:-.01em}
+/* a thin line that keeps scanning down the card (transform + opacity only; stays hidden with reduced motion) */
+.ab-scan{position:absolute;inset:0 22px;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,rgba(124,140,255,.85),transparent) 0 0/100% 1px no-repeat;animation:ab-scan 7s cubic-bezier(.45,0,.55,1) infinite}
+@keyframes ab-scan{0%{transform:translateY(6%);opacity:0}14%{opacity:.9}86%{opacity:.9}100%{transform:translateY(94%);opacity:0}}
+
+/* the opening note: an accent line draws itself down the left edge when it scrolls in */
+.ab-note{position:relative;max-width:60ch;margin-top:72px;padding-left:28px;font-size:clamp(1.02rem,1.45vw,1.18rem);line-height:1.72;color:var(--text-2)}
+.ab-note::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:2px;border-radius:2px;background:var(--grad);box-shadow:0 0 14px rgba(124,140,255,.7);transform-origin:50% 0;transition:transform 1.3s var(--ease) .25s}
+.ab-note.reveal:not(.in)::before{transform:scaleY(0)}
+
+/* ---- section heads and running text ---- */
+.ab-head{max-width:720px}
+.ab-p{max-width:58ch;margin-top:30px;color:var(--text-2)}
+
+/* ---- who I build for ---- */
+.who-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:20px;margin-top:40px}
+.who-card{display:flex;flex-direction:column}
+.who-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.who-ico{display:grid;place-items:center;width:46px;height:46px;border-radius:13px;background:var(--accent-soft);box-shadow:inset 0 0 0 1px rgba(124,140,255,.3);color:#c6cdff;transition:background-color .25s ease,color .25s ease,box-shadow .25s ease}
+.who-ico svg{width:22px;height:22px}
+.who-n{font:500 .7rem/1 var(--mono);letter-spacing:.14em;color:var(--muted)}
+.who-card b{display:block;margin-bottom:6px;font-family:var(--display);font-size:1.15rem;font-weight:600;line-height:1.25;letter-spacing:-.02em;color:var(--text)}
+.who-card>span{display:block;color:var(--text-2);font-size:.95rem;line-height:1.6}
+@media (hover:hover){
+  .who-card:hover .who-ico{background:var(--accent);color:var(--accent-ink);box-shadow:0 0 22px rgba(124,140,255,.7)}
+}
+
+/* ---- how it works: the shared .steps timeline, with the day badge sitting inside the step heading ---- */
+.ab-steps .step h3 .day{display:flex;width:-moz-fit-content;width:fit-content}
+
+/* ---- common questions ---- */
+.ab-faq{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:56px;align-items:start}
+.ab-faq .ab-head{position:sticky;top:104px}
+.faq-list{display:grid;gap:14px}
+.faq{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;padding:22px 24px}
+.faq-n{padding-top:4px;font:500 .7rem/1.3 var(--mono);letter-spacing:.12em;color:var(--accent)}
+.faq h3{font-size:1.1rem;line-height:1.3;letter-spacing:-.015em}
+.faq p{max-width:60ch;margin-top:8px;color:var(--text-2);font-size:.97rem}
+
+/* ---- get in touch ---- */
+.ab-contact{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:start}
+.ab-find-h{display:flex;align-items:center;gap:10px;margin-bottom:16px;font:500 .72rem/1.3 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--text-2)}
+
+/* ---- responsive ---- */
+@media (max-width:900px){
+  .ab-hero-grid,.ab-faq,.ab-contact{grid-template-columns:minmax(0,1fr)}
+  .ab-hero-grid{gap:48px}
+  .ab-stage{justify-self:start}
+  .ab-faq,.ab-contact{gap:32px}
+  .ab-faq .ab-head{position:static}
+  .ab-note{margin-top:60px}
+}
+@media (max-width:600px){
+  .ab-hero{padding-bottom:60px}
+  .ab-hero-grid{gap:40px}
+  .ab-frame{inset:-10px}
+  .ab-spec{padding:18px 20px 8px}
+  .ab-note{margin-top:52px;padding-left:20px}
+  .who-grid{gap:14px;margin-top:32px}
+  .faq{gap:12px;padding:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  .ab-note.reveal::before{transform:none!important}
+}
 </style>
+<noscript><style>.reveal{opacity:1!important;transform:none!important}.ab-note.reveal::before{transform:none!important}</style></noscript>
 </head>
 <body>
 <div class="progress" aria-hidden="true"><i id="bar"></i></div>
@@ -51,67 +131,162 @@
 </header>
 
 <main id="top">
-<section class="ab-hero">
+<!-- HERO -->
+<section class="page-hero ab-hero" data-spot>
+  <div class="ab-deco" aria-hidden="true"><i class="ab-glow" data-parallax="0.18"></i></div>
   <div class="wrap">
-    <h1 class="reveal">Hi, I'm Yatharth.</h1>
-    <p class="lead reveal">I build simple, fast websites for local shops in Delhi NCR — the kind of site that gets you found on Google, without the agency price tag or the six-week timeline.</p>
+    <div class="ab-hero-grid">
+      <div>
+        <p class="kicker reveal">About &amp; pricing</p>
+        <h1 class="reveal">Hi, I'm <em>Yatharth</em>.</h1>
+        <p class="lead reveal">I build simple, fast websites for local shops in Delhi NCR — the kind of site that gets you found on Google, without the agency price tag or the six-week timeline.</p>
+      </div>
+      <div class="ab-stage reveal" data-reveal="flip" data-delay="220">
+        <i class="ab-frame" aria-hidden="true"></i>
+        <div class="ab-spec glass float" data-tilt="7">
+          <i class="ab-scan" aria-hidden="true"></i>
+          <div class="ab-spec-head" data-depth="34"><span><i class="live-dot" aria-hidden="true"></i>At a glance</span><span class="muted">Delhi NCR</span></div>
+          <dl class="specs" data-depth="18">
+            <div><dt>Turnaround</dt><dd><span class="grad-text">5 days</span></dd></div>
+            <div><dt>Pricing from</dt><dd>₹1,500</dd></div>
+            <div><dt>Process</dt><dd>WhatsApp-first</dd></div>
+            <div><dt>Built by</dt><dd>One person</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <p class="ab-note reveal">Most of my clients are shop owners who already do well on word-of-mouth and Instagram, but are invisible the moment someone searches Google for what they sell. I build the website that fixes that — nothing more complicated than it needs to be, built and shipped by one person (me), so there's no account manager or hand-off between departments. You talk to the person actually building your site.</p>
   </div>
 </section>
 
-<section class="ab-body">
+<!-- WHO I BUILD FOR -->
+<section class="band">
   <div class="wrap">
-    <p class="reveal">Most of my clients are shop owners who already do well on word-of-mouth and Instagram, but are invisible the moment someone searches Google for what they sell. I build the website that fixes that — nothing more complicated than it needs to be, built and shipped by one person (me), so there's no account manager or hand-off between departments. You talk to the person actually building your site.</p>
-
-    <h2 class="reveal">Who I build for</h2>
-    <p class="reveal">Local, owner-run businesses that want a real online presence without managing it themselves. Recent work spans:</p>
-    <div class="who-grid">
-      <div class="who-card reveal"><b>E-commerce &amp; retail</b><span>Nutrition, jewellery, hardware &amp; stationery stores with full product catalogues.</span></div>
-      <div class="who-card reveal"><b>Restaurants</b><span>Menus, ordering flows and location details built to convert hungry visitors fast.</span></div>
-      <div class="who-card reveal"><b>Services &amp; travel</b><span>Booking-led sites for chauffeur, travel and appointment-based businesses.</span></div>
+    <div class="ab-head">
+      <p class="kicker reveal">01 / Clients</p>
+      <h2 class="reveal">Who I build for</h2>
+      <p class="lead reveal">Local, owner-run businesses that want a real online presence without managing it themselves. Recent work spans:</p>
     </div>
-    <p class="reveal">See the actual sites on the <a href="projects.html">work page</a> — real client builds are kept clearly separate from sample mockups there.</p>
+    <div class="who-grid" data-stagger="110">
+      <div class="who-card glass reveal" data-tilt="7">
+        <div class="who-top" data-depth="40" aria-hidden="true"><i class="who-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8h13l1 12h-15l1-12z"/><path d="M9 8V7a3 3 0 016 0v1"/></svg></i><i class="who-n">01</i></div>
+        <b data-depth="26">E-commerce &amp; retail</b><span data-depth="12">Nutrition, jewellery, hardware &amp; stationery stores with full product catalogues.</span>
+      </div>
+      <div class="who-card glass reveal" data-tilt="7">
+        <div class="who-top" data-depth="40" aria-hidden="true"><i class="who-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v18"/><path d="M4 3v5a3 3 0 006 0V3"/><path d="M17 21v-7h-2.5V8.5C14.5 5.5 15.6 3.6 17 3v11"/></svg></i><i class="who-n">02</i></div>
+        <b data-depth="26">Restaurants</b><span data-depth="12">Menus, ordering flows and location details built to convert hungry visitors fast.</span>
+      </div>
+      <div class="who-card glass reveal" data-tilt="7">
+        <div class="who-top" data-depth="40" aria-hidden="true"><i class="who-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/><path d="M9.2 15l2 2 3.6-4"/></svg></i><i class="who-n">03</i></div>
+        <b data-depth="26">Services &amp; travel</b><span data-depth="12">Booking-led sites for chauffeur, travel and appointment-based businesses.</span>
+      </div>
+    </div>
+    <p class="ab-p reveal">See the actual sites on the <a href="projects.html">work page</a> — real client builds are kept clearly separate from sample mockups there.</p>
+  </div>
+</section>
 
-    <h2 class="reveal">How it works</h2>
-    <p class="reveal"><b>Day 1 — We chat.</b> You send your shop name, photos, products or menu, hours and location over WhatsApp. Ten minutes, no forms.</p>
-    <p class="reveal"><b>Day 3 — You see a preview.</b> A live preview link, not a static mockup — you click around it like a customer would. One round of edits is included.</p>
-    <p class="reveal"><b>Day 5 — You go live.</b> Your own domain or a free subdomain, plus a short walkthrough of how to update it yourself (or I manage it for you).</p>
+<!-- HOW IT WORKS -->
+<section class="band glow" data-spot>
+  <div class="wrap">
+    <div class="ab-head">
+      <p class="kicker reveal">02 / Process</p>
+      <h2 class="reveal">How it works</h2>
+    </div>
+    <div class="steps ab-steps" data-stagger="140">
+      <div class="step reveal"><h3><span class="day">Day 1</span><span class="sr-only"> — </span>We chat.</h3><p>You send your shop name, photos, products or menu, hours and location over WhatsApp. Ten minutes, no forms.</p></div>
+      <div class="step reveal"><h3><span class="day">Day 3</span><span class="sr-only"> — </span>You see a preview.</h3><p>A live preview link, not a static mockup — you click around it like a customer would. One round of edits is included.</p></div>
+      <div class="step reveal"><h3><span class="day">Day 5</span><span class="sr-only"> — </span>You go live.</h3><p>Your own domain or a free subdomain, plus a short walkthrough of how to update it yourself (or I manage it for you).</p></div>
+    </div>
+  </div>
+</section>
 
-    <h2 class="reveal">Pricing</h2>
-    <p class="reveal">Founding-client pricing is currently locked in for early shops, even after rates increase later.</p>
-    <div class="tiers" style="margin-top:24px">
-      <div class="tier reveal">
-        <span class="name">Starter</span><h3>One page</h3><div class="price">₹1,500–2,000</div>
+<!-- PRICING -->
+<section data-spot>
+  <div class="wrap">
+    <div class="ab-head">
+      <p class="kicker reveal">03 / Rates</p>
+      <h2 class="reveal">Pricing</h2>
+      <p class="lead reveal">Founding-client pricing is currently locked in for early shops, even after rates increase later.</p>
+    </div>
+    <div class="tiers" data-stagger="110">
+      <div class="tier reveal" data-tilt="6">
+        <span class="name" data-depth="14">Starter</span><h3 data-depth="22">One page</h3><div class="price" data-depth="40">₹1,500–2,000</div>
         <ul><li>Info, contact, location, hours</li><li>Mobile-friendly design</li><li>Live in 3–5 days</li></ul>
-        <a class="btn sm" href="index.html?plan=Starter#enquire">Enquire about Starter</a>
+        <a class="btn sm" data-magnetic href="index.html?plan=Starter#enquire">Enquire about Starter</a>
       </div>
-      <div class="tier mid reveal">
-        <span class="name">Standard</span><h3>Multi-page</h3><div class="price">₹3,500–4,500</div>
+      <div class="tier mid is-featured reveal" data-tilt="6">
+        <span class="name" data-depth="14">Standard</span><h3 data-depth="22">Multi-page</h3><div class="price grad-text" data-depth="40">₹3,500–4,500</div>
         <ul><li>Home, about, products/menu, contact form</li><li>Mobile-friendly design</li><li>Live in 5 days</li></ul>
-        <a class="btn sm ink" href="index.html?plan=Standard#enquire">Enquire about Standard</a>
+        <a class="btn sm ink" data-magnetic href="index.html?plan=Standard#enquire">Enquire about Standard</a>
       </div>
-      <div class="tier reveal">
-        <span class="name">Growth</span><h3>Standard + reach</h3><div class="price">₹5,500–6,500</div>
+      <div class="tier reveal" data-tilt="6">
+        <span class="name" data-depth="14">Growth</span><h3 data-depth="22">Standard + reach</h3><div class="price" data-depth="40">₹5,500–6,500</div>
         <ul><li>Everything in Standard</li><li>Basic SEO setup</li><li>WhatsApp and Instagram integration</li></ul>
-        <a class="btn sm" href="index.html?plan=Growth#enquire">Enquire about Growth</a>
+        <a class="btn sm" data-magnetic href="index.html?plan=Growth#enquire">Enquire about Growth</a>
       </div>
     </div>
+  </div>
+</section>
 
-    <h2 class="reveal">Common questions</h2>
-    <p class="reveal"><b>How much does a website for a local shop cost?</b><br>Yatharth Webs sites start at ₹1,500–2,000 for a one-page site, ₹3,500–4,500 for a multi-page site, and ₹5,500–6,500 for a multi-page site with basic SEO and WhatsApp/Instagram integration.</p>
-    <p class="reveal"><b>How long does it take to build a shop website?</b><br>Most sites go live in about five days: a WhatsApp chat on day one, a live preview on day three, and launch on day five.</p>
-    <p class="reveal"><b>Do you build websites for shops outside Delhi?</b><br>Yes. The work is done remotely over WhatsApp, and clients so far include shops in Delhi and Hyderabad.</p>
-    <p class="reveal"><b>Who is Yatharth Webs?</b><br>Yatharth Webs is the freelance web design studio of Yatharth Jorwal, building simple, fast websites for local businesses in Delhi NCR and beyond.</p>
+<!-- COMMON QUESTIONS -->
+<section class="band">
+  <div class="wrap ab-faq">
+    <div class="ab-head">
+      <p class="kicker reveal">04 / FAQ</p>
+      <h2 class="reveal">Common questions</h2>
+    </div>
+    <div class="faq-list" data-stagger="90">
+      <div class="faq glass reveal" data-spot><span class="faq-n" aria-hidden="true">Q1</span><div><h3>How much does a website for a local shop cost?</h3><p>Yatharth Webs sites start at ₹1,500–2,000 for a one-page site, ₹3,500–4,500 for a multi-page site, and ₹5,500–6,500 for a multi-page site with basic SEO and WhatsApp/Instagram integration.</p></div></div>
+      <div class="faq glass reveal" data-spot><span class="faq-n" aria-hidden="true">Q2</span><div><h3>How long does it take to build a shop website?</h3><p>Most sites go live in about five days: a WhatsApp chat on day one, a live preview on day three, and launch on day five.</p></div></div>
+      <div class="faq glass reveal" data-spot><span class="faq-n" aria-hidden="true">Q3</span><div><h3>Do you build websites for shops outside Delhi?</h3><p>Yes. The work is done remotely over WhatsApp, and clients so far include shops in Delhi and Hyderabad.</p></div></div>
+      <div class="faq glass reveal" data-spot><span class="faq-n" aria-hidden="true">Q4</span><div><h3>Who is Yatharth Webs?</h3><p>Yatharth Webs is the freelance web design studio of Yatharth Jorwal, building simple, fast websites for local businesses in Delhi NCR and beyond.</p></div></div>
+    </div>
+  </div>
+</section>
 
-    <h2 class="reveal">Get in touch</h2>
-    <p class="reveal">Fastest way to reach me is WhatsApp. You can also see full project details on the <a href="projects.html">work page</a>, or go straight to the <a href="index.html#enquire">enquiry form</a>.</p>
+<!-- GET IN TOUCH -->
+<section class="band glow" data-spot>
+  <div class="wrap ab-contact">
+    <div class="ab-head">
+      <p class="kicker reveal">05 / Contact</p>
+      <h2 class="reveal">Get in touch</h2>
+      <p class="lead reveal">Fastest way to reach me is WhatsApp. You can also see full project details on the <a href="projects.html">work page</a>, or go straight to the <a href="index.html#enquire">enquiry form</a>.</p>
+    </div>
+    <div>
+      <h3 class="ab-find-h reveal"><i class="live-dot accent" aria-hidden="true"></i>Find me</h3>
+      <ul class="handles" data-stagger="80">
+        <li class="reveal" data-reveal="right"><a class="handle" href="https://wa.me/918130926649" target="_blank" rel="noopener"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa"/></svg></span><span class="h-txt"><b>WhatsApp</b><small>Fastest way to reach me</small></span><span class="h-go" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-go"/></svg></span></a></li>
+        <li class="reveal" data-reveal="right"><a class="handle" href="mailto:websyatharth@gmail.com" data-mail><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg></span><span class="h-txt"><b>websyatharth@gmail.com</b><small>Email</small></span><span class="h-go" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-go"/></svg></span></a></li>
+        <li class="reveal" data-reveal="right"><a class="handle" href="https://instagram.com/yatharthwebs" target="_blank" rel="noopener"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-ig"/></svg></span><span class="h-txt"><b>@yatharthwebs</b><small>Instagram</small></span><span class="h-go" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-go"/></svg></span></a></li>
+        <li class="reveal" data-reveal="right"><a class="handle" href="https://x.com/yatharth404" target="_blank" rel="noopener"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg></span><span class="h-txt"><b>@yatharth404</b><small>X</small></span><span class="h-go" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-go"/></svg></span></a></li>
+        <li class="reveal" data-reveal="right"><a class="handle" href="https://github.com/YatharthJorwal" target="_blank" rel="noopener"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gh"/></svg></span><span class="h-txt"><b>YatharthJorwal</b><small>GitHub</small></span><span class="h-go" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-go"/></svg></span></a></li>
+      </ul>
+    </div>
   </div>
 </section>
 </main>
+
+<!-- icons for the profile handles (used in "Find me" and in the footer) -->
+<svg class="sr-only" width="0" height="0" aria-hidden="true" focusable="false">
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12.05 2a10 10 0 00-8.5 15.25L2 22l4.9-1.5A10 10 0 1012.05 2zm5.4 13.9c-.2.6-1.2 1.1-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.6-.1 1.2z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/></g></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor"/></g></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path fill="currentColor" d="M17.8 3h3l-6.6 7.5L22 21h-6.1l-4.8-6.2L5.6 21h-3l7-8L2 3h6.2l4.3 5.7L17.8 3zm-1 16.2h1.7L7.3 4.7H5.5l11.3 14.5z"/></symbol>
+  <symbol id="i-go" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M9 7h8v8"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></symbol>
+</svg>
 
 <footer>
   <div class="wrap">
     <span>Yatharth Webs © 2026 — websites for local shops</span>
     <nav aria-label="Footer"><a href="projects.html">Work</a><a href="about.html">About</a><a href="index.html#pricing">Pricing</a><a href="index.html#reviews">Reviews</a><a href="index.html#enquire">Enquire</a></nav>
+    <ul class="handles mini" aria-label="Find me on">
+      <li><a class="handle" href="https://wa.me/918130926649" target="_blank" rel="noopener" title="WhatsApp"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa"/></svg></span><span class="h-txt"><b>WhatsApp</b><small>Fastest way to reach me</small></span></a></li>
+      <li><a class="handle" href="mailto:websyatharth@gmail.com" data-mail title="Email"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg></span><span class="h-txt"><b>websyatharth@gmail.com</b><small>Email</small></span></a></li>
+      <li><a class="handle" href="https://instagram.com/yatharthwebs" target="_blank" rel="noopener" title="Instagram"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-ig"/></svg></span><span class="h-txt"><b>@yatharthwebs</b><small>Instagram</small></span></a></li>
+      <li><a class="handle" href="https://x.com/yatharth404" target="_blank" rel="noopener" title="X"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg></span><span class="h-txt"><b>@yatharth404</b><small>X</small></span></a></li>
+      <li><a class="handle" href="https://github.com/YatharthJorwal" target="_blank" rel="noopener" title="GitHub"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gh"/></svg></span><span class="h-txt"><b>YatharthJorwal</b><small>GitHub</small></span></a></li>
+    </ul>
   </div>
 </footer>
 
@@ -122,18 +297,44 @@
 <script>
 const $ = (s, r=document) => r.querySelector(s);
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (!reduce){
-  const io = new IntersectionObserver(es => es.forEach(en => en.isIntersecting && en.target.classList.add('in')), {threshold:.12});
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-} else {
-  document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
-}
+
+/* Email handles: on desktop open a ready-to-send Gmail draft (a bare mailto: does nothing without a mail app set up);
+   on phones the mailto: link opens the mail app as usual. Same behaviour as the homepage. */
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[data-mail]'); if (!a || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) return;
+  e.preventDefault();
+  const q = encodeURIComponent, body = ['Hi Yatharth,', '', "I came across Yatharth Webs and I'd like a website for my shop. Could you share a free mockup and the next steps?", '', 'Shop name:', 'What you sell:', 'WhatsApp number:', '', 'Thanks,'].join('\n');
+  window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${q('websyatharth@gmail.com')}&su=${q('Website enquiry')}&body=${q(body)}`, '_blank', 'noopener');
+});
+
+/* assets/fx.js (deferred) drives the .reveal entrances and the .steps timeline.
+   This is the fallback for when it did not load, so the page never stays hidden. */
+addEventListener('DOMContentLoaded', () => {
+  if (window.FX) return;
+  const watch = (sel, cls, threshold) => {
+    const els = document.querySelectorAll(sel);
+    if (reduce || !('IntersectionObserver' in window)) { els.forEach(el => el.classList.add(cls)); return; }
+    const io = new IntersectionObserver(es => es.forEach(en => {
+      if (en.isIntersecting) { en.target.classList.add(cls); io.unobserve(en.target); }
+    }), {threshold});
+    els.forEach(el => io.observe(el));
+  };
+  watch('.reveal', 'in', .12);
+  watch('.steps', 'go', .35);
+});
+
+/* scroll progress bar, at most one write per frame */
 const bar = $('#bar');
-const onScroll = () => {
+let queued = false;
+const paint = () => {
+  queued = false;
   const h = document.documentElement;
   bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight || 1) * 100) + '%';
 };
-addEventListener('scroll', onScroll, {passive:true}); onScroll();
+const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(paint); } };
+addEventListener('scroll', onScroll, {passive:true});
+addEventListener('resize', onScroll, {passive:true});
+paint();
 </script>
 </body>
 </html>

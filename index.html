@@ -9,23 +9,87 @@
 <meta property="og:description" content="Simple, fast websites that get local shops found on Google. Live in five days.">
 <meta property="og:type" content="website">
 <link rel="canonical" href="https://yatharthwebs.site/">
-<meta name="theme-color" content="#0f1b3d">
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" href="/favicon.png" sizes="96x96">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#07080c">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png?v=2" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=JetBrains+Mono:wght@400..700&family=Space+Grotesk:wght@400..700&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://script.google.com">
 <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/desk.css">
+<style>
+/* index.html only: a few accents on top of assets/styles.css (theme) and assets/desk.css (hero).
+   The motion comes from assets/fx.js through the data-tilt / data-depth / data-spot / data-magnetic / data-parallax hooks. */
+main>section{isolation:isolate}
+section>.wrap{position:relative}
+/* big outlined section numerals behind the headings; they drift a little on scroll (data-parallax) */
+.sec-n{position:absolute;z-index:-1;right:0;top:-46px;font:700 clamp(4.2rem,13vw,10rem)/1 var(--display);letter-spacing:-.06em;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.09);-webkit-mask-image:linear-gradient(180deg,#000 25%,transparent 96%);mask-image:linear-gradient(180deg,#000 25%,transparent 96%);pointer-events:none;-webkit-user-select:none;user-select:none}
+/* cards that enter with data-reveal="flip" keep a bottom transform-origin; the pointer tilt should turn around the centre */
+[data-tilt].is-tilting,[data-tilt].is-settling{transform-origin:50% 50%}
+
+/* difference: the Instagram-only side is dim, the website side is lit */
+.panel>.badge{align-self:flex-start;margin-bottom:18px}
+.live-dot.off{background:var(--muted);box-shadow:none}
+.live-dot.off::after{display:none}
+.panel.bad{background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,.008)),var(--bg-2)}
+.panel.bad .igrid{opacity:.5}
+.panel.bad h3{color:var(--text-2)}
+.panel.bad p{color:var(--muted)}
+.panel.win{border-color:rgba(124,140,255,.36);box-shadow:var(--shadow),0 0 0 1px rgba(124,140,255,.1),0 34px 90px -46px rgba(124,140,255,.8)}
+.fav.off{background:var(--line);color:var(--muted)}
+/* the highlighted search result breathes */
+.mini-res .row.me{position:relative}
+.mini-res .row.me::after{content:"";position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 0 1px rgba(124,140,255,.75),0 0 30px rgba(124,140,255,.55);opacity:0;pointer-events:none;animation:rowPulse 2.4s ease-in-out infinite alternate}
+@keyframes rowPulse{to{opacity:1}}
+@media (hover:hover){
+  .diff-grid .panel.win:hover{border-color:rgba(124,140,255,.6);box-shadow:var(--shadow),var(--glow),0 34px 90px -46px rgba(124,140,255,.9)}
+}
+
+/* work + difference: extra layers while a card tilts (fx.js sets --nx / --ny, -1..1, on the tilted card) */
+@media (hover:hover) and (pointer:fine){
+  .project .body,.panel.win .mini-res{transform-style:preserve-3d}
+  .project.is-tilting .glyph{transform:translate(calc(var(--nx)*7px),calc(var(--ny)*6px));transition:transform .18s ease-out}
+  .project.is-tilting .ln{transform:translate(calc(var(--nx)*4px),calc(var(--ny)*3px));transition:transform .18s ease-out}
+  .project.is-tilting .pilly{transform:translate(calc(var(--nx)*12px),calc(var(--ny)*9px));transition:transform .18s ease-out}
+  .diff-grid .panel.win.is-tilting .row.me{transform:translateZ(26px)}
+  /* lifted buttons keep their own hover transitions */
+  [data-tilt] .btn[data-depth]{transition:transform .45s var(--ease),box-shadow .3s ease,background-color .3s ease,border-color .3s ease,color .3s ease}
+}
+
+/* reviews: each new review eases in */
+.rev-stage>:not(.rev-nav){animation:revIn .55s var(--ease) both}
+.rev-stage>:nth-child(n+3):not(.rev-nav){animation-delay:.07s}
+@keyframes revIn{from{opacity:0;transform:translateY(10px)}}
+.rev-avg{margin-left:auto;font:500 .68rem/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* profile handles inside the projects modal */
+.sheet .handles{margin-top:12px}
+/* the floating WhatsApp button eases back when the magnetic pull lets go */
+.fab{transition:transform .25s var(--ease),opacity .25s ease,translate .45s var(--ease)}
+@media (max-width:600px){.sec-n{top:-40px}}
+</style>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <meta name="google-site-verification" content="PASTE_GSC_TOKEN_HERE">  <!-- Search Console: replace token, or delete this line if you verify via DNS -->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ProfessionalService", "@id": "https://yatharthwebs.site/#business", "name": "Yatharth Webs", "alternateName": ["YatharthWebs", "Yatharth Webs Delhi"], "url": "https://yatharthwebs.site/", "description": "Freelance web design and development for local shops in Delhi NCR. Simple, fast websites live in five days, priced from ₹1,500.", "founder": {"@type": "Person", "name": "Yatharth Jorwal", "url": "https://yatharthwebs.site/about.html"}, "areaServed": {"@type": "AdministrativeArea", "name": "Delhi NCR, India"}, "priceRange": "₹1,500–₹6,500", "sameAs": ["https://instagram.com/yatharthwebs", "https://x.com/YatharthJorwal", "https://github.com/YatharthJorwal"]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ProfessionalService", "@id": "https://yatharthwebs.site/#business", "name": "Yatharth Webs", "alternateName": ["YatharthWebs", "Yatharth Webs Delhi"], "url": "https://yatharthwebs.site/", "description": "Freelance web design and development for local shops in Delhi NCR. Simple, fast websites live in five days, priced from ₹1,500.", "founder": {"@type": "Person", "name": "Yatharth Jorwal", "url": "https://yatharthwebs.site/about.html"}, "areaServed": {"@type": "AdministrativeArea", "name": "Delhi NCR, India"}, "priceRange": "₹1,500–₹6,500", "sameAs": ["https://instagram.com/yatharthwebs", "https://x.com/yatharth404", "https://github.com/YatharthJorwal"]}</script>
 <script src="assets/pixel.js"></script>
+<script src="assets/fx.js" defer></script>
+<noscript><style>.reveal{opacity:1!important;transform:none!important;translate:none!important}</style></noscript>   <!-- JavaScript off: nothing waits for a scroll reveal -->
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1102043718863613&ev=PageView&noscript=1" alt=""></noscript>
 </head>
 <body>
 <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+
+<!-- icons for the profile handles: <svg><use href="#i-wa"/></svg> -->
+<svg class="sr-only" width="0" height="0" aria-hidden="true" focusable="false">
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12.05 2a10 10 0 00-8.5 15.25L2 22l4.9-1.5A10 10 0 1012.05 2zm5.4 13.9c-.2.6-1.2 1.1-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.6-.1 1.2z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/></g></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor"/></g></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path fill="currentColor" d="M17.8 3h3l-6.6 7.5L22 21h-6.1l-4.8-6.2L5.6 21h-3l7-8L2 3h6.2l4.3 5.7L17.8 3zm-1 16.2h1.7L7.3 4.7H5.5l11.3 14.5z"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></symbol>
+</svg>
 
 <header class="nav">
   <div class="wrap">
@@ -41,40 +105,59 @@
 </header>
 
 <main id="top">
-<!-- HERO -->
-<section class="hero">
-  <div class="wrap">
-    <div>
-      <h1>Your shop's story, made real online.</h1>
+<!-- HERO: the studio desk. The 3D scene is assets/desk.js; every object on the desk is a project from assets/projects.js -->
+<section class="desk-hero" id="desk" data-state="loading" data-mode="home">
+  <div class="desk-stage">
+    <canvas id="deskCanvas" role="img" aria-label="A 3D desk. Every object on it is one of my projects: pick one up to see it."></canvas>
+  </div>
+  <div class="desk-shade" aria-hidden="true"></div>
+
+  <div class="wrap desk-copy">
+    <div class="desk-head">
+      <p class="desk-eyebrow"><i aria-hidden="true"></i><span id="deskClock">Web studio · Delhi NCR</span></p>
+      <h1>Your shop's story, <em>made real</em> online.</h1>
+    </div>
+    <div class="desk-side">
       <p class="lead">Most customers search Google before they walk in. If your shop only lives on Instagram, they never find you. Yatharth Webs builds simple, fast websites that get you found.</p>
       <div class="cta-row">
-        <a class="btn ink" href="#enquire">Get a free mockup</a>
-        <a class="btn" href="#work">See live sites</a>
+        <a class="btn y" href="#enquire" data-magnetic>Get a free mockup</a>
+        <a class="btn" href="#work" data-magnetic>See live sites</a>
       </div>
-      <div class="stats">
-        <div class="stat"><b><span data-count="5">5</span> days</b><span>from first chat to live</span></div>
-        <div class="stat"><b><span id="siteCount" data-count="15">15</span> sites</b><span>live for you to browse</span></div>
-        <div class="stat"><b>₹<span data-count="1500">1,500</span></b><span>where pricing starts</span></div>
-      </div>
-    </div>
-
-    <div class="serp" aria-hidden="true">
-      <span class="tag t1">Found on Google</span>
-      <div class="serp-bar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <span><span id="typed"></span><i class="caret"></i></span>
-      </div>
-      <div class="res" id="res">
-        <div class="res-u"><span class="fav" id="resFav"></span><span id="resU"></span></div>
-        <div class="res-t" id="resT"></div>
-        <div class="res-d" id="resD"></div>
-        <div class="res-a"><span>Call</span><span>WhatsApp</span><span>Directions</span></div>
-      </div>
-      <div class="ghost"><i></i><i></i><i></i></div>
-      <span class="tag t2">Customers walk in</span>
     </div>
   </div>
+
+  <div class="desk-bar" id="deskBar">
+    <button type="button" data-desk="prev" aria-label="Previous project">‹</button>
+    <span id="deskHint">Everything on the desk is a project</span>
+    <button type="button" data-desk="next" aria-label="Next project">›</button>
+  </div>
+  <div class="desk-tip" id="deskTip" hidden></div>
+
+  <article class="desk-card" id="deskCard" hidden aria-live="polite">
+    <div class="dc-top"><span class="dc-cat"></span><span class="dc-n"></span><button type="button" class="x" data-desk="close" aria-label="Back to the desk">×</button></div>
+    <h2 class="dc-name"></h2>
+    <p class="dc-kind"></p>
+    <p class="dc-desc"></p>
+    <div class="dc-actions">
+      <a class="btn y sm dc-go" href="#work" target="_blank" rel="noopener">Visit live site</a>
+      <button type="button" class="btn sm dc-alt" data-desk="embed" hidden>Type in it here</button>
+      <span class="dc-nav"><button type="button" class="btn sm" data-desk="prev" aria-label="Previous project">‹</button><button type="button" class="btn sm" data-desk="next" aria-label="Next project">›</button></span>
+    </div>
+    <p class="dc-hint"></p>
+  </article>
+
+  <div class="desk-term" id="deskTerm">
+    <div class="desk-term-bar"><button type="button" class="btn sm y" data-desk="close">← Back to the desk</button><a class="btn sm" href="terminal.html" target="_blank" rel="noopener">Open full page ↗</a></div>
+  </div>
 </section>
+
+<div class="desk-facts">
+  <div class="wrap stats" data-stagger="90">
+    <div class="stat reveal"><b><span data-count="5">5</span> days</b><span>from first chat to live</span></div>
+    <div class="stat reveal"><b><span id="siteCount" data-count="16">16</span> sites</b><span>live for you to browse</span></div>
+    <div class="stat reveal"><b>₹<span data-count="1500">1,500</span></b><span>where pricing starts</span></div>
+  </div>
+</div>
 
 <div class="ticker" aria-hidden="true">
   <div class="ticker-track" id="ticker"></div>
@@ -83,22 +166,26 @@
 <!-- DIFFERENCE -->
 <section id="difference">
   <div class="wrap">
+    <span class="sec-n" aria-hidden="true" data-parallax="0.12">01</span>
+    <p class="kicker reveal">01 / The difference</p>
     <h2 class="reveal">What customers actually see</h2>
     <p class="lead reveal">The same shop, two very different first impressions.</p>
     <div class="diff-grid">
-      <div class="panel bad reveal">
-        <div class="igrid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="panel bad reveal" data-reveal="left" data-tilt="6">
+        <span class="badge" aria-hidden="true" data-depth="36"><i class="live-dot off"></i>Hidden</span>
+        <div class="igrid" aria-hidden="true" data-depth="26"><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="miss"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg>Not in Google results</div>
-        <h3>Instagram only</h3>
+        <h3 data-depth="14">Instagram only</h3>
         <p>Only visible to people who already follow you or find you by chance. Doesn't show up when someone searches "shop near me" on Google or Maps.</p>
       </div>
-      <div class="panel win reveal">
-        <div class="mini-res" aria-hidden="true">
-          <div class="row"><span class="fav" style="background:var(--line);color:var(--muted)">•</span>Another shop nearby<small>2.1 km</small></div>
+      <div class="panel win reveal" data-reveal="right" data-tilt="6">
+        <span class="badge accent" aria-hidden="true" data-depth="36"><i class="live-dot accent"></i>Found</span>
+        <div class="mini-res" aria-hidden="true" data-depth="26">
+          <div class="row"><span class="fav off">•</span>Another shop nearby<small>2.1 km</small></div>
           <div class="row me"><span class="fav">Y</span>Your shop<small>Right here</small></div>
-          <div class="row"><span class="fav" style="background:var(--line);color:var(--muted)">•</span>Another shop nearby<small>3.4 km</small></div>
+          <div class="row"><span class="fav off">•</span>Another shop nearby<small>3.4 km</small></div>
         </div>
-        <h3>With a website</h3>
+        <h3 data-depth="14">With a website</h3>
         <p>Shows up when someone actively searches for what you sell — nearby, right now, ready to visit or order.</p>
       </div>
     </div>
@@ -106,13 +193,15 @@
 </section>
 
 <!-- WORK -->
-<section id="work">
+<section id="work" data-spot>
   <div class="wrap">
+    <span class="sec-n" aria-hidden="true" data-parallax="0.12">02</span>
+    <p class="kicker reveal">02 / Live work</p>
     <h2 class="reveal">A few shops already live.</h2>
     <p class="lead reveal">These are full working sites, not image mockups. Click through and browse them the way a customer would.</p>
-    <div class="work-grid" id="workGrid"></div>
-    <div class="more-row">
-      <button class="btn y" id="moreBtn" aria-haspopup="dialog">View more projects <b id="moreCount">+12</b></button>
+    <div class="work-grid" id="workGrid" data-stagger="110"></div>
+    <div class="more-row reveal">
+      <button class="btn y" id="moreBtn" aria-haspopup="dialog" data-magnetic>View more projects <b id="moreCount">+13</b></button>
       <a class="btn" href="projects.html">Browse full project directory</a>
     </div>
     <p class="note">Manzil, Bhatti, Kaagaz, Auren Frame, Vedic Ratna and Tech Finds are sample mockups made to show what's possible — not paid client work. Yours could be next.</p>
@@ -120,14 +209,16 @@
 </section>
 
 <!-- PROCESS -->
-<section id="process">
+<section id="process" data-spot>
   <div class="wrap">
-    <h2 class="reveal">Live in five days, start to finish.</h2>
+    <span class="sec-n" aria-hidden="true" data-parallax="0.12">03</span>
+    <p class="kicker reveal">03 / Process</p>
+    <h2 class="reveal">Live in <em>five days</em>, start to finish.</h2>
     <p class="lead reveal">No long meetings, no jargon. You share the basics, I build, you approve.</p>
-    <div class="steps" id="steps">
-      <div class="step"><span class="day">Day 01</span><h3>We chat</h3><p>Send me your shop name, photos, products or menu, hours, and location over WhatsApp. Takes 10 minutes.</p></div>
-      <div class="step"><span class="day">Day 03</span><h3>You see a preview</h3><p>I share a live preview link of your site. You review it and tell me what to change — one round of edits included.</p></div>
-      <div class="step"><span class="day">Day 05</span><h3>You go live</h3><p>Site goes live with your own link. I walk you through how to keep it updated, or manage it for you.</p></div>
+    <div class="steps" id="steps" data-stagger="160">
+      <div class="step reveal"><span class="day">Day 01</span><h3>We chat</h3><p>Send me your shop name, photos, products or menu, hours, and location over WhatsApp. Takes 10 minutes.</p></div>
+      <div class="step reveal"><span class="day">Day 03</span><h3>You see a preview</h3><p>I share a live preview link of your site. You review it and tell me what to change — one round of edits included.</p></div>
+      <div class="step reveal"><span class="day">Day 05</span><h3>You go live</h3><p>Site goes live with your own link. I walk you through how to keep it updated, or manage it for you.</p></div>
     </div>
   </div>
 </section>
@@ -135,35 +226,39 @@
 <!-- PRICING -->
 <section id="pricing">
   <div class="wrap">
+    <span class="sec-n" aria-hidden="true" data-parallax="0.12">04</span>
+    <p class="kicker reveal">04 / Pricing</p>
     <h2 class="reveal">Founding-client pricing, locked in.</h2>
     <p class="lead reveal">Currently offering founding-client pricing to a few first shops — locked in for you even after rates go up.</p>
-    <div class="tiers">
-      <div class="tier reveal">
-        <span class="name">Starter</span><h3>One page</h3><div class="price">₹1,500–2,000</div>
+    <div class="tiers" data-stagger="110">
+      <div class="tier reveal" data-reveal="flip" data-tilt="6">
+        <span class="name" data-depth="14">Starter</span><h3 data-depth="22">One page</h3><div class="price" data-depth="38">₹1,500–2,000</div>
         <ul><li>Info, contact, location, hours</li><li>Mobile-friendly design</li><li>Live in 3–5 days</li></ul>
-        <button class="btn sm" data-plan="Starter — One page">Enquire about Starter</button>
+        <button class="btn sm" data-plan="Starter — One page" data-depth="24">Enquire about Starter</button>
       </div>
-      <div class="tier mid reveal">
-        <span class="name">Standard</span><h3>Multi-page</h3><div class="price">₹3,500–4,500</div>
+      <div class="tier mid is-featured reveal" data-reveal="flip" data-tilt="6">
+        <span class="name" data-depth="14">Standard</span><h3 data-depth="22">Multi-page</h3><div class="price grad-text" data-depth="38">₹3,500–4,500</div>
         <ul><li>Home, about, products/menu, contact form</li><li>Mobile-friendly design</li><li>Live in 5 days</li></ul>
-        <button class="btn sm ink" data-plan="Standard — Multi-page">Enquire about Standard</button>
+        <button class="btn sm ink" data-plan="Standard — Multi-page" data-depth="24">Enquire about Standard</button>
       </div>
-      <div class="tier reveal">
-        <span class="name">Growth</span><h3>Standard + reach</h3><div class="price">₹5,500–6,500</div>
+      <div class="tier reveal" data-reveal="flip" data-tilt="6">
+        <span class="name" data-depth="14">Growth</span><h3 data-depth="22">Standard + reach</h3><div class="price" data-depth="38">₹5,500–6,500</div>
         <ul><li>Everything in Standard</li><li>Basic SEO setup</li><li>WhatsApp and Instagram integration</li></ul>
-        <button class="btn sm" data-plan="Growth — Standard + reach">Enquire about Growth</button>
+        <button class="btn sm" data-plan="Growth — Standard + reach" data-depth="24">Enquire about Growth</button>
       </div>
     </div>
   </div>
 </section>
 
 <!-- REVIEWS -->
-<section id="reviews">
+<section id="reviews" data-spot>
   <div class="wrap">
+    <span class="sec-n" aria-hidden="true" data-parallax="0.12">05</span>
+    <p class="kicker reveal">05 / Reviews</p>
     <h2 class="reveal">What shop owners say</h2>
     <p class="lead reveal">Reviews from people I've built for appear here. Worked with me? Add yours.</p>
     <div class="rev-grid">
-      <div class="rev-stage reveal" id="revStage" aria-live="polite"></div>
+      <div class="rev-stage reveal" data-reveal="zoom" id="revStage" aria-live="polite"></div>
       <div class="form-card reveal">
         <form id="revForm" novalidate>
           <div class="hp" aria-hidden="true"><label>Website <input id="rHp" tabindex="-1" autocomplete="off"></label></div>
@@ -196,20 +291,22 @@
 </section>
 
 <!-- ENQUIRE -->
-<section id="enquire">
+<section id="enquire" data-spot>
   <div class="wrap enq">
     <div>
+      <p class="kicker reveal">06 / Enquire</p>
       <h2 class="reveal">Let's make your shop real online.</h2>
       <p class="lead reveal">Tell me about your shop and I'll reply on WhatsApp with a free mockup idea. No commitment.</p>
-      <div class="ways reveal">
-        <a class="way" href="https://wa.me/918130926649" target="_blank" rel="noopener"><i><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.05 2a10 10 0 00-8.5 15.25L2 22l4.9-1.5A10 10 0 1012.05 2zm5.4 13.9c-.2.6-1.2 1.1-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.300 2.400 1.500.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.6-.1 1.2z"/></svg></i><span><b>WhatsApp</b><small>Fastest way to reach me</small></span></a>
-        <a class="way" href="mailto:websyatharth@gmail.com" data-mail><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/></svg></i><span><b>websyatharth@gmail.com</b><small>Opens a ready-to-send Gmail draft</small></span></a>
-        <a class="way" href="https://instagram.com/yatharthwebs" target="_blank" rel="noopener"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor"/></svg></i><span><b>@yatharthwebs</b><small>Instagram</small></span></a>
-        <a class="way" href="https://x.com/YatharthJorwal" target="_blank" rel="noopener"><i><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.8 3h3l-6.6 7.5L22 21h-6.1l-4.8-6.2L5.6 21h-3l7-8L2 3h6.2l4.3 5.7L17.800 3zm-1 16.200h1.700L7.300 4.700H5.500l11.300 14.500z"/></svg></i><span><b>@YatharthJorwal</b><small>X</small></span></a>
-      </div>
+      <ul class="handles" data-stagger="70">
+        <li class="reveal"><a class="handle" href="https://wa.me/918130926649" target="_blank" rel="noopener"><span class="h-ico"><svg aria-hidden="true"><use href="#i-wa"/></svg></span><span class="h-txt"><b>WhatsApp</b><small>Fastest way to reach me</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+        <li class="reveal"><a class="handle" href="mailto:websyatharth@gmail.com" data-mail><span class="h-ico"><svg aria-hidden="true"><use href="#i-mail"/></svg></span><span class="h-txt"><b>websyatharth@gmail.com</b><small>Opens a ready-to-send Gmail draft</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+        <li class="reveal"><a class="handle" href="https://instagram.com/yatharthwebs" target="_blank" rel="noopener"><span class="h-ico"><svg aria-hidden="true"><use href="#i-ig"/></svg></span><span class="h-txt"><b>@yatharthwebs</b><small>Instagram</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+        <li class="reveal"><a class="handle" href="https://x.com/yatharth404" target="_blank" rel="noopener"><span class="h-ico"><svg aria-hidden="true"><use href="#i-x"/></svg></span><span class="h-txt"><b>@yatharth404</b><small>X</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+        <li class="reveal"><a class="handle" href="https://github.com/YatharthJorwal" target="_blank" rel="noopener"><span class="h-ico"><svg aria-hidden="true"><use href="#i-gh"/></svg></span><span class="h-txt"><b>YatharthJorwal</b><small>GitHub</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      </ul>
     </div>
 
-    <div class="form-card reveal">
+    <div class="form-card reveal" data-reveal="right">
       <form id="enqForm" novalidate>
         <div class="hp" aria-hidden="true"><label>Website <input id="eHp" tabindex="-1" autocomplete="off"></label></div>
         <h3>Send an enquiry</h3>
@@ -232,7 +329,7 @@
         </div>
         <div class="field"><label for="eMsg">Anything I should know? <span>(optional)</span></label><textarea id="eMsg" placeholder="What you sell, who your customers are, sites you like…"></textarea></div>
         <div class="actions">
-          <button type="submit" class="btn wa" data-via="wa">Send on WhatsApp</button>
+          <button type="submit" class="btn wa" data-via="wa" data-magnetic>Send on WhatsApp</button>
           <button type="submit" class="btn" data-via="mail">Send by email</button>
         </div>
       </form>
@@ -251,10 +348,17 @@
   <div class="wrap">
     <span>Yatharth Webs © 2026 — websites for local shops</span>
     <nav aria-label="Footer"><a href="projects.html">Work</a><a href="about.html">About</a><a href="#pricing">Pricing</a><a href="#reviews">Reviews</a><a href="#enquire">Enquire</a></nav>
+    <ul class="handles mini" aria-label="Find me on">
+      <li><a class="handle" href="https://wa.me/918130926649" target="_blank" rel="noopener" title="WhatsApp"><span class="h-ico"><svg aria-hidden="true"><use href="#i-wa"/></svg></span><span class="h-txt"><b>WhatsApp</b><small>Fastest way to reach me</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="mailto:websyatharth@gmail.com" data-mail title="Email"><span class="h-ico"><svg aria-hidden="true"><use href="#i-mail"/></svg></span><span class="h-txt"><b>websyatharth@gmail.com</b><small>Email</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="https://instagram.com/yatharthwebs" target="_blank" rel="noopener" title="Instagram"><span class="h-ico"><svg aria-hidden="true"><use href="#i-ig"/></svg></span><span class="h-txt"><b>@yatharthwebs</b><small>Instagram</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="https://x.com/yatharth404" target="_blank" rel="noopener" title="X"><span class="h-ico"><svg aria-hidden="true"><use href="#i-x"/></svg></span><span class="h-txt"><b>@yatharth404</b><small>X</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="https://github.com/YatharthJorwal" target="_blank" rel="noopener" title="GitHub"><span class="h-ico"><svg aria-hidden="true"><use href="#i-gh"/></svg></span><span class="h-txt"><b>YatharthJorwal</b><small>GitHub</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+    </ul>
   </div>
 </footer>
 
-<a class="fab" id="fab" href="https://wa.me/918130926649" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+<a class="fab" id="fab" href="https://wa.me/918130926649" target="_blank" rel="noopener" aria-label="Chat on WhatsApp" data-magnetic>
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.05 2a10 10 0 00-8.5 15.25L2 22l4.9-1.5A10 10 0 1012.05 2zm5.4 13.9c-.2.6-1.2 1.1-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.6-.1 1.2z"/></svg>
 </a>
 
@@ -274,12 +378,13 @@
     </div>
     <div class="plist" id="plist"></div>
     <h3 class="sub">More places to find me</h3>
-    <div class="linkrow">
-      <a class="btn sm wa" href="https://wa.me/918130926649" target="_blank" rel="noopener">WhatsApp</a>
-      <a class="btn sm" href="https://instagram.com/yatharthwebs" target="_blank" rel="noopener">Instagram</a>
-      <a class="btn sm" href="https://x.com/YatharthJorwal" target="_blank" rel="noopener">X</a>
-      <a class="btn sm" href="mailto:websyatharth@gmail.com" data-mail>Email</a>
-    </div>
+    <ul class="handles cols">
+      <li><a class="handle" href="https://wa.me/918130926649" target="_blank" rel="noopener"><span class="h-ico"><svg aria-hidden="true"><use href="#i-wa"/></svg></span><span class="h-txt"><b>WhatsApp</b><small>Fastest way to reach me</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="mailto:websyatharth@gmail.com" data-mail><span class="h-ico"><svg aria-hidden="true"><use href="#i-mail"/></svg></span><span class="h-txt"><b>websyatharth@gmail.com</b><small>Email</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="https://instagram.com/yatharthwebs" target="_blank" rel="noopener"><span class="h-ico"><svg aria-hidden="true"><use href="#i-ig"/></svg></span><span class="h-txt"><b>@yatharthwebs</b><small>Instagram</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="https://x.com/yatharth404" target="_blank" rel="noopener"><span class="h-ico"><svg aria-hidden="true"><use href="#i-x"/></svg></span><span class="h-txt"><b>@yatharth404</b><small>X</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="https://github.com/YatharthJorwal" target="_blank" rel="noopener"><span class="h-ico"><svg aria-hidden="true"><use href="#i-gh"/></svg></span><span class="h-txt"><b>YatharthJorwal</b><small>GitHub</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+    </ul>
   </div>
 </div>
 
@@ -319,41 +424,7 @@ const tickItems = ['Found on Google','Mobile-first','WhatsApp orders','Your own 
 const tk = $('#ticker');
 tk.innerHTML = [0,1].map(() => tickItems.map(t => `<span>${t}</span>`).join('')).join('');
 
-/* hero search demo */
-/* Pinned by project id (not array position), so adding or reordering projects in
-   assets/projects.js can never change what this panel shows. */
-const DEMO_QUERIES = [
-  { q:'performance nutrition india',      id:'ideserve'  },
-  { q:'door handles chawri bazar delhi',  id:'ginniplus' },
-  { q:'gold jewellery hyderabad',         id:'trishla'   }
-];
-const DEMOS = DEMO_QUERIES
-  .map(d => ({ q:d.q, p:PROJECTS.find(p => p.id === d.id) }))
-  .filter(d => d.p);
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-function showResult(p){
-  $('#resFav').textContent = p.glyph;
-  $('#resU').textContent = p.host;
-  $('#resT').textContent = p.name;
-  $('#resD').textContent = p.desc.split(/[.—]/)[0].trim().slice(0, 96) + (p.desc.length > 96 ? '…' : '');
-  $('#res').classList.add('show');
-}
-async function runDemo(){
-  const typed = $('#typed'), res = $('#res');
-  if (reduce){ typed.textContent = DEMOS[0].q; showResult(DEMOS[0].p); return; }
-  let i = 0;
-  while (true){
-    const d = DEMOS[i % DEMOS.length];
-    res.classList.remove('show'); typed.textContent = '';
-    await sleep(500);
-    for (const ch of d.q){ typed.textContent += ch; await sleep(55 + Math.random()*45); }
-    await sleep(350); showResult(d.p);
-    await sleep(3400);
-    while (typed.textContent.length){ typed.textContent = typed.textContent.slice(0,-1); await sleep(18); }
-    i++;
-  }
-}
-runDemo();
+/* the hero is the 3D studio desk: see assets/desk.js (loaded at the bottom of this page) */
 
 /* count-up */
 function countUp(el){
@@ -369,35 +440,31 @@ function countUp(el){
 /* site count follows assets/projects.js, so it never goes stale */
 $('#siteCount').dataset.count = PROJECTS.length;
 $('#siteCount').textContent = PROJECTS.length;
-$$('[data-count]').forEach(countUp);
+/* each number runs once, when it scrolls into view (the strip sits just below the first screen) */
+if ('IntersectionObserver' in window && !reduce){
+  const co = new IntersectionObserver(es => es.forEach(en => {
+    if (!en.isIntersecting) return;
+    co.unobserve(en.target); countUp(en.target);
+  }), {threshold:.6});
+  $$('[data-count]').forEach(el => co.observe(el));
+} else $$('[data-count]').forEach(countUp);
 
 /* project cards */
 function thumbHtml(p){
-  return `<div class="thumb" aria-hidden="true" style="--a:${p.a};--b:${p.b};--c:${p.c}">
-    <div class="bar"><i></i><i></i><i></i><span>${esc(p.host)}</span></div>
+  return `<div class="thumb" aria-hidden="true" data-depth="30" style="--a:${p.a};--b:${p.b};--c:${p.c}">
+    <div class="bar"><i class="live-dot"></i><i></i><i></i><span>${esc(p.host)}</span></div>
     <div class="scr"><div class="glyph">${esc(p.glyph)}</div><div class="ln l1"></div><div class="ln l2"></div><div class="pilly">Visit site</div></div>
   </div>`;
 }
 const featured = PROJECTS.filter(p => p.featured);
 $('#workGrid').innerHTML = featured.map((p,i) => `
-  <a class="project reveal ${i===0?'big':''}" href="${esc(p.url)}" target="_blank" rel="noopener">
+  <a class="project reveal ${i===0?'big':''}" data-reveal="flip" data-tilt="7" href="${esc(p.url)}" target="_blank" rel="noopener">
     ${thumbHtml(p)}
-    <div class="body"><span class="kind">${esc(p.kind)}</span><h3>${esc(p.name)}</h3><p>${esc(p.desc)}</p><span class="visit">View live site ${arrow}</span></div>
+    <div class="body"><span class="kind" data-depth="18">${esc(p.kind)}</span><h3 data-depth="32">${esc(p.name)}</h3><p>${esc(p.desc)}</p><span class="visit" data-depth="24">View live site ${arrow}</span></div>
   </a>`).join('');
 $('#moreCount').textContent = '+' + (PROJECTS.length - featured.length);
 
-/* tilt on thumbs */
-if (!reduce && matchMedia('(pointer:fine)').matches){
-  $$('.project').forEach(card => {
-    const t = $('.thumb', card);
-    card.addEventListener('pointermove', e => {
-      const r = card.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-      t.style.transform = `perspective(700px) rotateY(${x*6}deg) rotateX(${-y*6}deg)`;
-    });
-    card.addEventListener('pointerleave', () => t.style.transform = '');
-  });
-}
+/* the 3D tilt, glare and lifted layers on these cards come from assets/fx.js (data-tilt / data-depth above) */
 
 /* modal */
 const modal = $('#modal'); let lastFocus = null;
@@ -415,7 +482,7 @@ function renderList(f){
     if (!rows.length) return '';
     const wide = cats.length === 1 || cat === 'own';
     return `<div class="pcol${wide ? ' wide' : ''}">
-      <h4 class="pcol-h">${CAT_LABELS[cat]} <span class="pcol-n">${rows.length}</span></h4>
+      <h3 class="pcol-h">${CAT_LABELS[cat]} <span class="pcol-n">${rows.length}</span></h3>
       <div class="pcol-list">${rows.map(pitemHtml).join('')}</div>
     </div>`;
   }).join('');
@@ -423,10 +490,10 @@ function renderList(f){
 function openModal(){
   lastFocus = document.activeElement; renderList('all');
   $$('.chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.f === 'all'));
-  modal.hidden = false; document.body.style.overflow = 'hidden';
+  modal.hidden = false; document.documentElement.style.overflow = 'hidden';
   $('.x', modal).focus();
 }
-function closeModal(){ modal.hidden = true; document.body.style.overflow = ''; lastFocus && lastFocus.focus(); }
+function closeModal(){ modal.hidden = true; document.documentElement.style.overflow = ''; lastFocus && lastFocus.focus(); }
 $('#moreBtn').addEventListener('click', openModal);
 modal.addEventListener('click', e => { if (e.target.closest('[data-close]')) closeModal(); });
 addEventListener('keydown', e => {
@@ -557,7 +624,7 @@ function renderReview(){
     stage.innerHTML = `<div class="rev-empty"><span class="stars" aria-hidden="true">${[1,2,3,4,5].map(()=>`<span class="off" style="display:inline-flex">${starSvg}</span>`).join('')}</span>
       <h3 style="margin-top:14px">No reviews yet — be the first.</h3>
       <p>I'm building for my first founding clients right now. Their reviews will show up here, unedited, as they come in.</p>
-      <div style="margin-top:20px"><a class="btn y sm" href="#enquire">Become a founding client</a></div></div>`;
+      <div style="margin-top:20px"><a class="btn y sm" href="#enquire" data-magnetic>Become a founding client</a></div></div>`;
     return;
   }
   const r = REVIEWS[ri % REVIEWS.length];
@@ -566,15 +633,18 @@ function renderReview(){
     <p class="rev-text">${esc(r.text)}</p>
     <div class="rev-who">${esc(r.name)}${r.shop?`<small>${esc(r.shop)}</small>`:''}</div>
     <div class="rev-nav">${REVIEWS.map((_,i)=>`<button class="dot" data-i="${i}" aria-label="Review ${i+1}" ${i===ri%REVIEWS.length?'aria-current="true"':''}></button>`).join('')}
-    <span style="margin-left:auto;font-weight:700;font-size:.9rem;color:var(--muted)">${avg} average · ${REVIEWS.length} review${REVIEWS.length>1?'s':''}</span></div>`;
+    <span class="rev-avg">${avg} average · ${REVIEWS.length} review${REVIEWS.length>1?'s':''}</span></div>`;
 }
 function startRotate(){
   clearInterval(timer);
+  stage.setAttribute('aria-live', REVIEWS.length > 1 && !reduce ? 'off' : 'polite');   // a screen reader should not be interrupted every few seconds
   if (REVIEWS.length > 1 && !reduce) timer = setInterval(() => { ri++; renderReview(); }, 6500);
 }
-stage.addEventListener('click', e => { const d = e.target.closest('.dot'); if (d){ ri = +d.dataset.i; renderReview(); startRotate(); } });
+stage.addEventListener('click', e => { const d = e.target.closest('.dot'); if (d){ ri = +d.dataset.i; renderReview(); startRotate(); const cur = stage.querySelector('.dot[aria-current]'); cur && cur.focus(); } });
 stage.addEventListener('mouseenter', () => clearInterval(timer));
 stage.addEventListener('mouseleave', startRotate);
+stage.addEventListener('focusin', () => clearInterval(timer));
+stage.addEventListener('focusout', startRotate);
 renderReview(); startRotate();
 
 /* reviews: star picker + form */
@@ -612,6 +682,7 @@ function setReviews(list){
   REVIEWS.length = 0; list.forEach(x => REVIEWS.push(cleanRev(x)));
   if (ri >= REVIEWS.length) ri = 0;
   revLoading = false; renderReview(); startRotate();
+  window.FX && FX.refresh();
 }
 async function loadReviews(){
   try { const c = JSON.parse(localStorage.getItem(REV_KEY) || 'null'); if (Array.isArray(c) && c.length) setReviews(c); } catch(_){}
@@ -629,6 +700,24 @@ async function loadReviews(){
   if (revLoading){ revLoading = false; renderReview(); }
 }
 loadReviews();
+</script>
+
+<!-- 3D studio desk. three.js is pinned to one version; the scene itself is assets/desk.js -->
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script>
+/* Load the desk only where it can run well. No WebGL, data-saver on, or ?lite in the URL: the hero stays as text. */
+(() => {
+  const hero = document.getElementById('desk');
+  const fallback = () => { if (hero.dataset.state !== 'live') hero.dataset.state = 'static'; };
+  let ok = !(navigator.connection && navigator.connection.saveData) && !new URLSearchParams(location.search).has('lite');
+  try { const c = document.createElement('canvas'); ok = ok && !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (_) { ok = false; }
+  ok = ok && !!(HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'));   // the desk module needs import maps (not in Safari before 16.4)
+  if (!ok) return fallback();
+  const s = document.createElement('script');
+  s.type = 'module'; s.src = 'assets/desk.js'; s.onerror = fallback;
+  document.body.appendChild(s);
+  setTimeout(fallback, 15000);
+})();
 </script>
 </body>
 </html>

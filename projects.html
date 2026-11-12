@@ -9,36 +9,174 @@
 <meta property="og:description" content="Live client sites, mockup templates and personal builds, all in one place.">
 <meta property="og:type" content="website">
 <link rel="canonical" href="https://yatharthwebs.site/projects.html">
-<meta name="theme-color" content="#0f1b3d">
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" href="/favicon.png" sizes="96x96">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#07080c">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png?v=2" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=JetBrains+Mono:wght@400..700&family=Space+Grotesk:wght@400..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <meta name="google-site-verification" content="PASTE_GSC_TOKEN_HERE">  <!-- Search Console: replace token, or delete this line if you verify via DNS -->
 <script src="assets/pixel.js"></script>
+<script src="assets/fx.js" defer></script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1102043718863613&ev=PageView&noscript=1" alt=""></noscript>
 <style>
-.pg-hero{padding:56px 0 8px}
-.pg-hero h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;letter-spacing:-.03em;max-width:20ch}
-.cat-section{padding:56px 0}
-.cat-head{max-width:60ch}
-.cat-head h2{font-size:clamp(1.6rem,3.4vw,2.2rem)}
-.cat-head p{color:var(--muted);margin-top:8px}
-.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:32px}
-.pcard{display:flex;flex-direction:column;gap:10px;background:var(--card);border:2px solid var(--ink);border-radius:var(--r-lg);padding:22px;box-shadow:var(--shadow);text-decoration:none;transition:box-shadow .2s,transform .2s}
-.pcard:hover{box-shadow:7px 7px 0 var(--ink);transform:translateY(-3px)}
-.pcard .pmark{width:46px;height:46px;border-radius:var(--r-md);display:grid;place-items:center;background:linear-gradient(135deg,var(--a),var(--b));color:var(--c);font-family:var(--display);font-weight:800;font-size:1.1rem}
-.pcard .kind{font-size:.8rem;font-weight:700;color:var(--teal-d);text-transform:uppercase;letter-spacing:.03em}
-.pcard h3{font-size:1.15rem}
-.pcard p{color:var(--muted);font-size:.94rem;flex:1}
-.pcard .visit{display:flex;align-items:center;gap:6px;font-weight:700;font-size:.9rem;margin-top:4px}
-.pcard .visit svg{width:16px;height:16px;transition:transform .2s}
-.pcard:hover .visit svg{transform:translate(3px,-3px)}
-.pcard .host{font-size:.82rem;color:var(--muted)}
+/* projects.html · page-only styles (Graphite theme).
+   Everything shared lives in assets/styles.css: tokens, .glass, .badge, .kicker, .band, .handles and the fx.js motion hooks
+   ([data-tilt] / [data-depth] / [data-spot] / [data-magnetic] / [data-parallax] / .reveal).
+   Project colours: each tile and deck slab carries --a / --b (screen gradient) and --c (glyph) inline, from assets/projects.js. */
+
+/* ---- hero ---- */
+.pg-hero{padding-bottom:0}
+.pg-hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:24px 56px;align-items:center}
+.pg-hero-copy{min-width:0}
+.pg-hero .kicker{flex-wrap:wrap}
+
+/* category jump links with live counts */
+.cat-nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.cat-nav a{display:inline-flex;align-items:center;gap:10px;min-height:40px;padding:8px 10px 8px 15px;border-radius:999px;border:1px solid var(--line-2);background:rgba(255,255,255,.03);font:500 .7rem/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-2);text-decoration:none;transition:border-color .25s ease,background-color .25s ease,color .25s ease,box-shadow .3s ease}
+.cat-nav a:hover{border-color:rgba(124,140,255,.55);background-color:rgba(124,140,255,.08);color:var(--text);box-shadow:var(--glow)}
+.cat-nav b{display:grid;place-items:center;min-width:24px;height:22px;padding:0 7px;border-radius:999px;background:var(--accent-soft);color:#c6cdff;font:600 .68rem/1 var(--mono);letter-spacing:0}
+.cat-nav b:empty{display:none}
+
+/* a floating deck of three project windows (decorative, desktop only).
+   .deck-wrap = perspective + scroll parallax · .deck-pose = the resting 3D pose · .deck = pointer tilt · .slab = one window */
+.deck-wrap{position:relative;height:340px;perspective:1000px}
+.deck-wrap::before{content:"";position:absolute;inset:-6% 0;background:radial-gradient(closest-side,rgba(124,140,255,.2),transparent 74%);pointer-events:none}
+.deck-pose{position:absolute;inset:0;transform:rotateX(12deg) rotateY(18deg) rotateZ(-3deg);transform-style:preserve-3d}
+/* the pose above already sits inside .deck-wrap's perspective, so the tilt adds rotation only */
+.deck{position:absolute;inset:0;--tilt-persp:100000px}
+.deck::after{content:none}
+.slab{--a:#111a33;--b:#27356b;--c:#aebcff;position:absolute;width:54%;transform-style:preserve-3d;animation:pg-bob 7s ease-in-out infinite alternate}
+.slab.s1{left:0;top:4%;transform:translateZ(-50px);animation-delay:-2s}
+.slab.s2{left:15%;top:27%;transform:translateZ(15px);animation-delay:-4.5s}
+.slab.s3{left:30%;top:50%;transform:translateZ(80px);animation-delay:-6.5s}
+.slab .pc-win{box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(124,140,255,.14),0 34px 50px -22px rgba(0,0,0,.95)}
+.slab .pc-scr{height:112px}
+@keyframes pg-bob{from{translate:0 -4px}to{translate:0 4px}}
+
+/* a light that keeps travelling along the hairline under the hero */
+.pg-scan{position:relative;height:1px;margin-top:52px;background:var(--line);overflow:hidden}
+.pg-scan i{position:absolute;inset:0 auto 0 0;width:28%;background:linear-gradient(90deg,transparent,#8c9bff 45%,#e07bff 70%,transparent);animation:pg-scan 6s cubic-bezier(.6,0,.4,1) infinite}
+@keyframes pg-scan{from{transform:translateX(-100%)}to{transform:translateX(360%)}}
+
+/* ---- category sections ---- */
+.cat-section{padding:80px 0}
+.cat-head{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:20px 40px;padding-bottom:26px;border-bottom:1px solid var(--line)}
+.cat-head>div{min-width:0}
+/* an accent line draws itself along the header rule when the category scrolls in */
+.cat-head::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,#6f86ff,#a47bff 38%,transparent 82%);transform-origin:0 50%;transition:transform 1.4s var(--ease) .2s;pointer-events:none}
+.cat-head.reveal:not(.in)::after{transform:scaleX(0)}
+.cat-head .kicker{flex-wrap:wrap}
+.cat-head h2{font-size:clamp(1.6rem,3.4vw,2.3rem)}
+.cat-blurb{margin-top:10px;max-width:54ch;color:var(--text-2)}
+/* big outlined count on the right (decorative: the kicker badge carries the real count) */
+.cat-big{flex:none;font:700 clamp(3.4rem,7vw,5rem)/.82 var(--display);letter-spacing:-.05em;color:rgba(124,140,255,.34);-webkit-user-select:none;user-select:none}
+@supports (-webkit-text-stroke:1px #000){.cat-big{color:transparent;-webkit-text-stroke:1px rgba(140,155,255,.6)}}
+
+/* ---- showroom tiles ----
+   .pcard is a .glass card with [data-tilt]. Layers that lift while it tilts (data-depth): the window, its glyph,
+   the status chip, the name and the round arrow. No overflow:hidden on the card, the stage or the float wrapper:
+   that would flatten the 3D layers. */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:26px;margin-top:34px;counter-reset:tile}
+.pcard{--a:#111a33;--b:#27356b;--c:#aebcff;display:flex;flex-direction:column;min-width:0;color:var(--text);text-decoration:none;counter-increment:tile}
+.pcard.glass{padding:0}
+.pcard:focus-visible{border-color:rgba(124,140,255,.6);box-shadow:var(--shadow),var(--glow)}
+
+/* stage: the dark shelf the window floats above, lit from below in the project's own colour */
+.pc-stage{position:relative;display:block;padding:26px 20px 22px;border-radius:calc(var(--r-lg) - 1px) calc(var(--r-lg) - 1px) 0 0;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0d1017,#090b10);transform-style:preserve-3d}
+.pc-stage::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.6;transition:opacity .45s ease;
+  background:radial-gradient(72% 78% at 50% 86%,var(--b),transparent 74%),
+    linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px) 0 0/100% 22px,
+    linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px) 0 0/22px 100%;
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 62%);mask-image:linear-gradient(180deg,transparent,#000 62%)}
+@supports (background:color-mix(in srgb,red 50%,blue)){
+  .pc-stage::before{background:radial-gradient(72% 78% at 50% 86%,color-mix(in srgb,var(--c) 36%,var(--b)),transparent 74%),
+    linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px) 0 0/100% 22px,
+    linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px) 0 0/22px 100%}
+}
+/* a thin line of the project's colour along the top edge of the tile */
+.pc-stage::after{content:"";position:absolute;left:14%;right:14%;top:-1px;height:1px;background:linear-gradient(90deg,transparent,var(--c),transparent);opacity:.4;transition:opacity .45s ease;pointer-events:none}
+.pcard:hover .pc-stage::before,.pcard:focus-visible .pc-stage::before{opacity:.95}
+.pcard:hover .pc-stage::after,.pcard:focus-visible .pc-stage::after{opacity:1}
+
+/* the window bobs gently; neighbouring tiles are out of phase */
+.pc-float{position:relative;display:block;transform-style:preserve-3d;animation:pg-bob 6.5s ease-in-out infinite alternate}
+.pgrid>:nth-child(3n+2) .pc-float{animation-delay:-2.2s}
+.pgrid>:nth-child(3n) .pc-float{animation-delay:-4.4s}
+
+/* mini browser window (shared by the tiles and the hero deck) */
+.pc-win{position:relative;display:block;overflow:hidden;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:#0b0d13;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 0 #040508,0 24px 34px -20px rgba(0,0,0,.95)}
+.pc-bar{display:flex;align-items:center;gap:6px;padding:8px 11px;background:#181c27;border-bottom:1px solid rgba(255,255,255,.07);font:500 .64rem/1.3 var(--mono);letter-spacing:.03em;color:var(--muted)}
+.pc-bar i{flex:none;width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18)}
+.pc-bar i:first-child{background:var(--hot)}
+.pc-bar span{min-width:0;margin-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-scr{position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;height:138px;padding:18px;overflow:hidden;background:linear-gradient(135deg,var(--a),var(--b))}
+/* light sweep across the screen on hover / focus */
+.pc-scr::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.18) 50%,transparent 65%);transform:translateX(-130%);pointer-events:none}
+.pcard:hover .pc-scr::after,.pcard:focus-visible .pc-scr::after{transform:translateX(130%);transition:transform 1s var(--ease)}
+.pc-ln{display:block;height:8px;border-radius:5px;background:var(--c);opacity:.38}
+.pc-ln.l1{width:54%}
+.pc-ln.l2{width:34%}
+.pc-cta{position:absolute;right:18px;bottom:18px;width:58px;height:22px;border-radius:999px;background:var(--c)}
+.pc-glyph{position:absolute;left:19px;top:45px;font:700 2.7rem/1 var(--display);letter-spacing:-.04em;color:var(--c);text-shadow:0 14px 22px rgba(0,0,0,.28);pointer-events:none}
+/* status chip that hangs off the window's top corner (a .badge); it only overlaps the bar's top padding, never the address */
+.pc-chip{position:absolute;top:-15px;right:-8px;box-shadow:0 10px 18px -8px rgba(0,0,0,.9)}
+.pcard .pc-chip{background:#0d1017}
+.pcard .pc-chip.green{background:linear-gradient(rgba(37,211,102,.14),rgba(37,211,102,.14)),#0d1017}
+
+/* text half of the tile */
+.pc-body{display:flex;flex-direction:column;gap:8px;flex:1;padding:20px 22px 22px;transform-style:preserve-3d}
+.pc-top{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.pc-top .kind{min-width:0}
+/* catalogue number, 01 02 03 ... within each category (the second declaration hides it from screen readers where supported) */
+.pc-top::after{content:counter(tile,decimal-leading-zero);content:counter(tile,decimal-leading-zero) / "";flex:none;font:500 .68rem/1.4 var(--mono);letter-spacing:.1em;color:var(--muted)}
+.pc-body h3{font-size:1.18rem;letter-spacing:-.02em}
+.pc-body p{flex:1;color:var(--text-2);font-size:.93rem;line-height:1.6}
+.pc-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:10px;padding-top:14px;border-top:1px solid var(--line);transform-style:preserve-3d}
+.pc-link{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;min-width:0}
+.pc-visit{font-weight:600;font-size:.92rem;color:var(--text)}
+.host{font:500 .7rem/1.45 var(--mono);letter-spacing:.02em;color:var(--muted);overflow-wrap:break-word;overflow-wrap:anywhere}
+/* the "Visit" affordance: a round arrow that fills with the accent gradient on hover / focus */
+.pc-go{position:relative;flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;border:1px solid var(--line-2);background:rgba(255,255,255,.04);color:var(--text)}
+.pcard .pc-go{transition:transform .45s var(--ease),box-shadow .3s ease}
+.pc-go::before{content:"";position:absolute;inset:-1px;border-radius:50%;background:var(--grad);opacity:0;transition:opacity .3s ease}
+.pc-go svg{position:relative;width:16px;height:16px;transition:transform .3s var(--ease),color .3s ease}
+.pcard:hover .pc-go,.pcard:focus-visible .pc-go{box-shadow:0 0 24px rgba(124,140,255,.55)}
+.pcard:hover .pc-go::before,.pcard:focus-visible .pc-go::before{opacity:1}
+.pcard:hover .pc-go svg,.pcard:focus-visible .pc-go svg{transform:translate(2px,-2px);color:var(--accent-ink)}
+
+/* ---- enquiry call-to-action ---- */
+#enquire-cta{padding:92px 0}
+.cta-wrap{display:grid;justify-items:center;text-align:center}
+.cta-wrap .kicker{margin-bottom:22px}
+.cta-btn{padding:16px 30px;font-size:1.02rem}
+
+/* ---- responsive ---- */
+@media (max-width:900px){
+  .pg-hero-grid{grid-template-columns:minmax(0,1fr)}
+  .deck-wrap{display:none}
+  .cat-section{padding:64px 0}
+}
+@media (max-width:700px){
+  .cat-big{display:none}
+}
+@media (max-width:600px){
+  .cat-nav{margin-top:26px}
+  .pg-scan{margin-top:38px}
+  .cat-section{padding:52px 0}
+  .cat-head{padding-bottom:22px}
+  .pgrid{gap:20px;margin-top:26px}
+  .pc-body{padding:18px 20px 20px}
+  #enquire-cta{padding:64px 0}
+  .cta-btn{padding:14px 22px;font-size:.96rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .cat-head.reveal::after{transform:none!important}
+}
 </style>
+<noscript><style>.reveal{opacity:1!important;transform:none!important}.cat-head.reveal::after{transform:none!important}</style></noscript>
 </head>
 <body>
 <div class="progress" aria-hidden="true"><i id="bar"></i></div>
@@ -57,54 +195,101 @@
 </header>
 
 <main id="top">
-<section class="pg-hero">
-  <div class="wrap">
-    <h1 class="reveal">Everything I've built.</h1>
-    <p class="lead reveal">I keep real client work and sample builds clearly separated below — so you always know which sites are live businesses and which are demos made to show what's possible.</p>
+<!-- HERO -->
+<section class="page-hero pg-hero" data-spot>
+  <div class="wrap pg-hero-grid">
+    <div class="pg-hero-copy">
+      <p class="kicker reveal">Work index <span class="badge"><i class="live-dot" aria-hidden="true"></i><span data-count="all" data-one="project" data-many="projects">All projects</span></span></p>
+      <h1 class="reveal">Everything I've <em>built.</em></h1>
+      <p class="lead reveal">I keep real client work and sample builds clearly separated below — so you always know which sites are live businesses and which are demos made to show what's possible.</p>
+      <nav class="cat-nav reveal" aria-label="Jump to a category">
+        <a href="#cat-shop"><i class="live-dot green" aria-hidden="true"></i>Live client sites <b data-count="shop"></b></a>
+        <a href="#cat-mockup">Mockup templates <b data-count="mockup"></b></a>
+        <a href="#cat-own">My own build <b data-count="own"></b></a>
+      </nav>
+    </div>
+    <!-- three floating project windows, filled in by the script below from assets/projects.js -->
+    <div class="deck-wrap reveal" data-reveal="zoom" data-delay="180" data-parallax="0.1" aria-hidden="true">
+      <div class="deck-pose"><div class="deck" id="deck" data-tilt="8"></div></div>
+    </div>
   </div>
+  <div class="wrap"><div class="pg-scan" aria-hidden="true"><i></i></div></div>
 </section>
 
+<!-- LIVE CLIENT SITES -->
 <section class="cat-section" id="cat-shop">
   <div class="wrap">
     <div class="cat-head reveal">
-      <h2>Live client sites</h2>
-      <p id="shop-blurb"></p>
+      <div>
+        <p class="kicker">01 / In production <span class="badge green"><i class="live-dot green" aria-hidden="true"></i><span data-count="shop" data-one="live" data-many="live">Live</span></span></p>
+        <h2>Live client sites</h2>
+        <p class="cat-blurb" id="shop-blurb"></p>
+      </div>
+      <span class="cat-big" data-count="shop" data-pad aria-hidden="true"></span>
     </div>
-    <div class="pgrid" id="shopGrid"></div>
+    <div class="pgrid" id="shopGrid" data-stagger="80"></div>
   </div>
 </section>
 
-<section class="cat-section" id="cat-mockup" style="background:var(--paper-2)">
+<!-- MOCKUP TEMPLATES -->
+<section class="cat-section band" id="cat-mockup">
   <div class="wrap">
     <div class="cat-head reveal">
-      <h2>Mockup templates</h2>
-      <p id="mockup-blurb"></p>
+      <div>
+        <p class="kicker">02 / Demos <span class="badge"><span data-count="mockup" data-one="mockup" data-many="mockups">Mockups</span></span></p>
+        <h2>Mockup templates</h2>
+        <p class="cat-blurb" id="mockup-blurb"></p>
+      </div>
+      <span class="cat-big" data-count="mockup" data-pad aria-hidden="true"></span>
     </div>
-    <div class="pgrid" id="mockupGrid"></div>
+    <div class="pgrid" id="mockupGrid" data-stagger="80"></div>
   </div>
 </section>
 
+<!-- MY OWN BUILD -->
 <section class="cat-section" id="cat-own">
   <div class="wrap">
     <div class="cat-head reveal">
-      <h2>My own build</h2>
-      <p id="own-blurb"></p>
+      <div>
+        <p class="kicker">03 / Personal <span class="badge accent"><span data-count="own" data-one="build" data-many="builds">Builds</span></span></p>
+        <h2>My own build</h2>
+        <p class="cat-blurb" id="own-blurb"></p>
+      </div>
+      <span class="cat-big" data-count="own" data-pad aria-hidden="true"></span>
     </div>
-    <div class="pgrid" id="ownGrid"></div>
+    <div class="pgrid" id="ownGrid" data-stagger="80"></div>
   </div>
 </section>
 
-<section id="enquire-cta">
-  <div class="wrap" style="text-align:center;padding:8px 0 40px">
-    <a class="btn ink" href="index.html#enquire">Want a site like these? Get a free mockup →</a>
+<!-- ENQUIRY CTA -->
+<section id="enquire-cta" class="band glow" data-spot>
+  <div class="wrap cta-wrap">
+    <p class="kicker center reveal">Next build</p>
+    <div class="reveal"><a class="btn ink cta-btn" data-magnetic href="index.html#enquire">Want a site like these? Get a free mockup →</a></div>
   </div>
 </section>
 </main>
+
+<!-- icons for the profile handles in the footer -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12.05 2a10 10 0 00-8.5 15.25L2 22l4.9-1.5A10 10 0 1012.05 2zm5.4 13.9c-.2.6-1.2 1.1-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.6-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.6-.1 1.2z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7.5l8 6 8-6"/></g></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></g><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></symbol>
+</svg>
 
 <footer>
   <div class="wrap">
     <span>Yatharth Webs © 2026 — websites for local shops</span>
     <nav aria-label="Footer"><a href="projects.html">Work</a><a href="about.html">About</a><a href="index.html#pricing">Pricing</a><a href="index.html#reviews">Reviews</a><a href="index.html#enquire">Enquire</a></nav>
+    <ul class="handles mini" aria-label="Find me">
+      <li><a class="handle" href="https://wa.me/918130926649" target="_blank" rel="noopener" title="WhatsApp"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa"/></svg></span><span class="h-txt"><b>WhatsApp</b><small>Fastest way to reach me</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="mailto:websyatharth@gmail.com" data-mail title="Email"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg></span><span class="h-txt"><b>websyatharth@gmail.com</b><small>Email</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="https://instagram.com/yatharthwebs" target="_blank" rel="noopener" title="Instagram"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-ig"/></svg></span><span class="h-txt"><b>@yatharthwebs</b><small>Instagram</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="https://x.com/yatharth404" target="_blank" rel="noopener" title="X"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg></span><span class="h-txt"><b>@yatharth404</b><small>X</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+      <li><a class="handle" href="https://github.com/YatharthJorwal" target="_blank" rel="noopener" title="GitHub"><span class="h-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gh"/></svg></span><span class="h-txt"><b>YatharthJorwal</b><small>GitHub</small></span><span class="h-go" aria-hidden="true">↗</span></a></li>
+    </ul>
   </div>
 </footer>
 
@@ -115,38 +300,113 @@
 <script src="assets/projects.js"></script>
 <script>
 const $ = (s, r=document) => r.querySelector(s);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Email handles: on desktop open a ready-to-send Gmail draft (a bare mailto: does nothing without a mail app set up);
+   on phones the mailto: link opens the mail app as usual. Same behaviour as the homepage. */
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[data-mail]'); if (!a || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) return;
+  e.preventDefault();
+  const q = encodeURIComponent, body = ['Hi Yatharth,', '', "I came across Yatharth Webs and I'd like a website for my shop. Could you share a free mockup and the next steps?", '', 'Shop name:', 'What you sell:', 'WhatsApp number:', '', 'Thanks,'].join('\n');
+  window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${q('websyatharth@gmail.com')}&su=${q('Website enquiry')}&body=${q(body)}`, '_blank', 'noopener');
+});
+
 const arrow = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 14L14 6M7 6h7v7"/></svg>';
+const CATS = ['shop','mockup','own'];
+const CAT_CHIP = { shop:'Live', mockup:'Mockup', own:'Own build' };
+const tint = p => `--a:${escHtml(p.a)};--b:${escHtml(p.b)};--c:${escHtml(p.c)}`;
+
+/* A mini browser window in the project's own colours (decorative: its container is aria-hidden).
+   data-depth = how far a layer lifts towards the viewer while its [data-tilt] parent is tilted (assets/fx.js). */
+function winHtml(p){
+  return `<span class="pc-win" data-depth="26">
+          <span class="pc-bar"><i></i><i></i><i></i><span>${escHtml(p.host)}</span></span>
+          <span class="pc-scr"><i class="pc-ln l1"></i><i class="pc-ln l2"></i><i class="pc-cta"></i></span>
+        </span>
+        <span class="pc-glyph" data-depth="60">${escHtml(p.glyph)}</span>`;
+}
 
 function cardHtml(p){
-  return `<a class="pcard reveal" href="${escHtml(p.url)}" target="_blank" rel="noopener">
-    <span class="pmark" style="--a:${p.a};--b:${p.b};--c:${p.c}">${escHtml(p.glyph)}</span>
-    <span class="kind">${escHtml(p.kind)}</span>
-    <h3>${escHtml(p.name)}</h3>
-    <p>${escHtml(p.desc)}</p>
-    <span class="host">${escHtml(p.host)}</span>
-    <span class="visit">Visit site ${arrow}</span>
+  const live = p.cat === 'shop';
+  return `<a class="pcard glass lift reveal" data-tilt="7" href="${escHtml(p.url)}" target="_blank" rel="noopener" style="${tint(p)}">
+    <span class="pc-stage" aria-hidden="true">
+      <span class="pc-float">
+        ${winHtml(p)}
+        <span class="pc-chip badge${live ? ' green' : ''}" data-depth="44">${live ? '<i class="live-dot green"></i>' : ''}${escHtml(CAT_CHIP[p.cat] || '')}</span>
+      </span>
+    </span>
+    <div class="pc-body">
+      <div class="pc-top"><span class="kind">${escHtml(p.kind)}</span></div>
+      <h3 data-depth="18">${escHtml(p.name)}</h3>
+      <p>${escHtml(p.desc)}</p>
+      <div class="pc-foot">
+        <span class="pc-link"><span class="pc-visit">Visit site<span class="sr-only"> (opens in a new tab)</span></span> <span class="host">${escHtml(p.host)}</span></span>
+        <span class="pc-go" data-depth="30">${arrow}</span>
+      </div>
+    </div>
   </a>`;
 }
 
-['shop','mockup','own'].forEach(cat => {
+/* render the three categories and count as we go */
+const counts = { all: 0 };
+CATS.forEach(cat => {
+  const list = PROJECTS.filter(p => p.cat === cat);
+  counts[cat] = list.length;
+  counts.all += list.length;
   $('#' + cat + '-blurb').textContent = CAT_BLURB[cat];
-  $('#' + cat + 'Grid').innerHTML = PROJECTS.filter(p => p.cat === cat).map(cardHtml).join('');
+  $('#' + cat + 'Grid').innerHTML = list.map(cardHtml).join('');
 });
 
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (!reduce){
-  const io = new IntersectionObserver(es => es.forEach(en => en.isIntersecting && en.target.classList.add('in')), {threshold:.12});
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-} else {
-  document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+/* live counts: <x data-count="shop|mockup|own|all">. With data-many (and data-one) it writes "6 mockups",
+   with data-pad it writes "06", otherwise just the number. Nothing here hard-codes how many projects there are. */
+document.querySelectorAll('[data-count]').forEach(el => {
+  const n = counts[el.dataset.count];
+  if (n == null) return;
+  const d = el.dataset;
+  el.textContent = d.many ? n + ' ' + (n === 1 ? d.one || d.many : d.many)
+    : el.hasAttribute('data-pad') ? String(n).padStart(2, '0') : n;
+});
+
+/* hero deck: three floating windows, back to front. If one of these ids ever goes away it falls back to the first projects. */
+const deck = $('#deck');
+if (deck){
+  const picks = ['detent','pagani','nitida'].map(id => PROJECTS.find(p => p.id === id)).filter(Boolean);
+  for (const p of PROJECTS){
+    if (picks.length >= 3) break;
+    if (!picks.includes(p)) picks.push(p);
+  }
+  deck.innerHTML = picks.slice(0, 3).map((p, i) => `<div class="slab s${i + 1}" style="${tint(p)}">
+        ${winHtml(p)}
+      </div>`).join('');
 }
 
+/* the tiles above were built after load: let the motion layer pick them up (it also watches for new nodes itself) */
+window.FX && FX.refresh();
+
+/* assets/fx.js (deferred) drives the .reveal entrances with a stagger.
+   This is the fallback for when it did not load, so the page never stays hidden. */
+addEventListener('DOMContentLoaded', () => {
+  if (window.FX) return;
+  const els = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) { els.forEach(el => el.classList.add('in')); return; }
+  const io = new IntersectionObserver(es => es.forEach(en => {
+    if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+  }), {threshold:.12});
+  els.forEach(el => io.observe(el));
+});
+
+/* scroll progress bar, at most one write per frame */
 const bar = $('#bar');
-const onScroll = () => {
+let queued = false;
+const paint = () => {
+  queued = false;
   const h = document.documentElement;
   bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight || 1) * 100) + '%';
 };
-addEventListener('scroll', onScroll, {passive:true}); onScroll();
+const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(paint); } };
+addEventListener('scroll', onScroll, {passive:true});
+addEventListener('resize', onScroll, {passive:true});
+paint();
 </script>
 </body>
 </html>
